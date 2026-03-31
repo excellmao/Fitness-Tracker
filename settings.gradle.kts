@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fitness Tracker"
 include(":app")
-include(":app:homescreen")
