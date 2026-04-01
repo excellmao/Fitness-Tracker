@@ -10,8 +10,10 @@ Mình sử dụng cấu trúc Hybird nhé, ae nào thấy khó hiểu thì cứ 
 Hoặc prompt AI nnay + cấu trúc dưới: 
 ```text
 Act as an expert Android Java Developer. >
-I am working on a 5-person university fitness app project called "Kinetic". We are using a Single-Activity Hybrid Architecture.
-I need you to write the boilerplate Java and XML for a new screen: [Insert Screen Name, e.g., The "Create Routine" Screen].
+I am working on a 5-person university fitness app project called "Fitness Tracker". We are using a Single-Activity Hybrid Architecture.
+I need you to write the boilerplate Java and XML for a new screen:
+[Insert Screen Name, e.g., The "Create Routine" Screen].
+
 Here are the strict architectural rules you MUST follow:
 1. The Component Rule:
 If this screen needs the main bottom navigation bar visible, you MUST build it as an AndroidX Fragment.
@@ -25,7 +27,8 @@ To navigate from a Fragment to a breakout Activity, use a standard Intent.
 4. UI Requirements:
 Use ConstraintLayout as the root for the XML.
 The app uses a dark theme. Use @android:color/black or @color/surface_dark for backgrounds, and @color/neon_yellow for primary buttons.
-Please provide the complete Java class and the associated XML layout file. Here is what needs to be on the screen: [Insert a brief list of UI elements, e.g., a RecyclerView for exercises, a "Save" button, and a text input for the routine name].
+Please provide the complete Java class and the associated XML layout file. Here is what needs to be on the screen:
+[Insert a brief list of UI elements, e.g., a RecyclerView for exercises, a "Save" button, and a text input for the routine name].
 ```
 
 ### 📁 Cấu trúc thư mục hiện tại:
