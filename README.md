@@ -6,8 +6,7 @@ Ae **viết code toàn bộ vào bên trong các folder tương ứng** với ph
 
 **ĐỪNG TẠO MODULE MỚI TRONG app, LỖI ĐẤY**
 
-Mình sử dụng cấu trúc Hybird nhé, ae nào thấy khó hiểu thì cứ copy cả cái readme này bảo nó refactor lại cho
-Hoặc prompt AI nnay + cấu trúc dưới: 
+Mình sử dụng cấu trúc Hybird nhé, ae nào thấy khó hiểu thì cứ copy cả cái readme này bảo nó refactor lại cho hoặc prompt AI nnay + cấu trúc dưới (để ý các phần có [note] như này, thay đổi sao cho phù hợp với màn hình xây dựng của mình): 
 ```text
 Act as an expert Android Java Developer. >
 I am working on a 5-person university fitness app project called "Fitness Tracker". We are using a Single-Activity Hybrid Architecture.
