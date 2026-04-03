@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/bg_chart_surface"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvMealType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LUNCH"
+        android:textColor="#FF8A65"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvFoodName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Protein Bowl"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMealType" />
+
+    <TextView
+        android:id="@+id/tvKcalPerUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="520 kcal per unit"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvFoodName" />
+
+    <LinearLayout
+        android:id="@+id/llCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_circle_dark"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnMinus"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@android:color/white"
+            android:rotation="270"/>
+
+        <TextView
+            android:id="@+id/tvQuantity"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnAdd"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_input_add"
+            app:tint="@android:color/white" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivFoodImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_meal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvKcalPerUnit" />
+
+    <TextView
+        android:id="@+id/tvMacroLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="PROTEINS"
+        android:textColor="@color/text_gray"
+        android:textSize="10sp"
+        app:layout_constraintStart_toEndOf="@id/ivFoodImage"
+        app:layout_constraintTop_toTopOf="@id/ivFoodImage" />
+
+    <ProgressBar
+        android:id="@+id/pbMacro"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:max="100"
+        android:progress="75"
+        android:progressDrawable="@drawable/bg_rounded_bar_active"
+        app:layout_constraintBottom_toBottomOf="@id/ivFoodImage"
+        app:layout_constraintEnd_toStartOf="@+id/tvMacroValue"
+        app:layout_constraintStart_toEndOf="@id/ivFoodImage"
+        app:layout_constraintTop_toBottomOf="@id/tvMacroLabel" />
+
+    <TextView
+        android:id="@+id/tvMacroValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="42g"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@id/pbMacro"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pbMacro" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

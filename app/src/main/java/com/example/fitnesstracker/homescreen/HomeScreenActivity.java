@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fitnesstracker.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.fitnesstracker.nutrition.NutritionFragment;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,8 +31,6 @@ public class HomeScreenActivity extends AppCompatActivity {
         ImageView avatar = findViewById(R.id.ivAvatar);
         avatar.setOnClickListener( v -> {
             // TODO: navigate to profile module
-            // Intent intent = new Intent(this, ProfileActivity.class);
-            // startActivity(intent);
         });
 
         //bottom nav
@@ -43,39 +41,31 @@ public class HomeScreenActivity extends AppCompatActivity {
         ImageView navProfile = findViewById(R.id.navProfile);
 
         navHome.setOnClickListener(v -> {
-            //NestedScrollView scrollView = findViewById(R.id.mainScrollView);
-            //scrollView.smoothScrollTo(0, 0);
+            // Scroll to top
         });
 
         navRun.setOnClickListener( v -> {
             // TODO: navigate to run module
-            // Intent intent = new Intent(this, RunActivity.class);
-            // startActivity(intent);
         });
 
         navWorkout.setOnClickListener( v -> {
             // TODO: navigate to workout module
-            // Intent intent = new Intent(this, WorkoutActivity.class);
-            // startActivity(intent);
         });
 
         navMeals.setOnClickListener( v -> {
-            // TODO: navigate to meals module
-            // Intent intent = new Intent(this, MealsActivity.class);
-            // startActivity(intent);
+            // Link sang NutritionFragment để test
+            getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new NutritionFragment())
+                .addToBackStack(null)
+                .commit();
         });
 
         navProfile.setOnClickListener( v -> {
             // TODO: navigate to profile module
-            // Intent intent = new Intent(this, ProfileActivity.class);
-            // startActivity(intent);
         });
 
-        // Test only, commented when running on actual devices
+        // Test only
         seedDatabase();
-
-        // Real database call
-        // loadWeeklyChartData();
     }
 
     private void seedDatabase() {
@@ -95,8 +85,6 @@ public class HomeScreenActivity extends AppCompatActivity {
             String dateSat = monday.plusDays(5).format(formatter);
 
             if (dao.getWorkoutCountForDate(dateMon) == 0) {
-
-                // 3. Insert dummy workouts using the dynamic date strings
                 dao.insertWorkout(new WorkoutLog(dateMon, "RUN", 45));
                 dao.insertWorkout(new WorkoutLog(dateWed, "LIFT", 60));
                 dao.insertWorkout(new WorkoutLog(dateWed, "RUN", 30));
@@ -159,6 +147,7 @@ public class HomeScreenActivity extends AppCompatActivity {
     }
 
     private void setBarData(View barLayout, String dayLabel, int workoutCount, int chartScaleMax) {
+        if (barLayout == null) return;
         TextView tvDay = barLayout.findViewById(R.id.tvDayLabel);
         tvDay.setText(dayLabel);
 

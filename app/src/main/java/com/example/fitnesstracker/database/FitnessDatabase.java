@@ -5,11 +5,12 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {WorkoutLog.class}, version = 1, exportSchema = false)
+@Database(entities = {WorkoutLog.class, FoodLog.class, WaterLog.class}, version = 2, exportSchema = false)
 public abstract class FitnessDatabase extends RoomDatabase {
     public abstract WorkoutDao workoutDao();
+    public abstract NutritionDao nutritionDao();
 
-    public static volatile FitnessDatabase INSTANCE;
+    private static volatile FitnessDatabase INSTANCE;
 
     public static FitnessDatabase getInstance(Context context) {
         if (INSTANCE == null) {
