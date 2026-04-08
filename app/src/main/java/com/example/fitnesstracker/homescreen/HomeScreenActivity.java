@@ -97,11 +97,11 @@ public class HomeScreenActivity extends AppCompatActivity {
             if (dao.getWorkoutCountForDate(dateMon) == 0) {
 
                 // 3. Insert dummy workouts using the dynamic date strings
-                dao.insertWorkout(new WorkoutLog(dateMon, "RUN", 45));
-                dao.insertWorkout(new WorkoutLog(dateWed, "LIFT", 60));
-                dao.insertWorkout(new WorkoutLog(dateWed, "RUN", 30));
-                dao.insertWorkout(new WorkoutLog(dateFri, "YOGA", 45));
-                dao.insertWorkout(new WorkoutLog(dateSat, "SWIM", 30));
+                dao.insertWorkout(new WorkoutLog(dateMon, "RUN", 45, 360));
+                dao.insertWorkout(new WorkoutLog(dateWed, "LIFT", 60, 480));
+                dao.insertWorkout(new WorkoutLog(dateWed, "RUN", 30, 240));
+                dao.insertWorkout(new WorkoutLog(dateFri, "YOGA", 45, 360));
+                dao.insertWorkout(new WorkoutLog(dateSat, "SWIM", 30, 240));
             }
 
             loadWeeklyChartData();

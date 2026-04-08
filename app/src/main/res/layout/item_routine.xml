@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card_dark"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/tvRoutineName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Hypertrophy Focus"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/ibEditRoutine"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvExerciseCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="6 Exercises"
+        android:textColor="@color/text_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvRoutineName" />
+
+    <ImageView
+        android:id="@+id/ibEditRoutine"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@android:drawable/ic_menu_edit"
+        android:contentDescription="Edit routine"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="@color/neon_yellow"
+        app:layout_constraintEnd_toStartOf="@+id/ibDeleteRoutine"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="8dp" />
+
+    <ImageView
+        android:id="@+id/ibDeleteRoutine"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Delete routine"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="#FF4444"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

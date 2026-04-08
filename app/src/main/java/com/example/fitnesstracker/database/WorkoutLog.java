@@ -13,10 +13,12 @@ public class WorkoutLog {
 
     public String workoutType;
     public int durationMinutes;
+    public int caloriesBurned;
 
-    public WorkoutLog(String date, String workoutType, int durationMinutes) {
+    public WorkoutLog(String date, String workoutType, int durationMinutes, int caloriesBurned) {
         this.date = date;
         this.workoutType = workoutType;
         this.durationMinutes = durationMinutes;
+        this.caloriesBurned = caloriesBurned;
     }
 }

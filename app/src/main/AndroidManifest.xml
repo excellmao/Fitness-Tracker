@@ -12,14 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FitnessTracker">
         <activity
-            android:name="com.example.fitnesstracker.homescreen.HomeScreenActivity"
+            android:name="com.example.fitnesstracker.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.example.fitnesstracker.homescreen.HomeScreenActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.fitnesstracker.workout.ActiveWorkoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FitnessTracker" />
     </application>
 
 </manifest>
