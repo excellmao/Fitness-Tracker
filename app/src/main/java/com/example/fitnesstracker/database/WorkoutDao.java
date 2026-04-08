@@ -10,4 +10,6 @@ public interface WorkoutDao {
     void insertWorkout(WorkoutLog workoutLog);
     @Query("SELECT COUNT(*) FROM workout_logs WHERE date = :dateString")
     int getWorkoutCountForDate(String dateString);
+    @Query("SELECT COALESCE(SUM(durationMinutes), 0) FROM workout_logs WHERE date = :date")
+    int getTotalDurationForDate(String date);
 }
