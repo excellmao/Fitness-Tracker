@@ -13,13 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.database.FitnessDatabase;
+import com.example.fitnesstracker.database.WorkoutLog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ActivityArchiveFragment extends Fragment {
 
     private RecyclerView rvActivityHistory;
+    private ArchiveAdapter adapter;
 
     public ActivityArchiveFragment() {}
 
@@ -30,41 +35,53 @@ public class ActivityArchiveFragment extends Fragment {
 
         rvActivityHistory = view.findViewById(R.id.rvActivityHistory);
 
-        // --- THÊM 3 DÒNG NÀY ĐỂ XỬ LÝ NÚT QUAY LẠI ---
+        // BACK BUTTON LOGIC
         View btnBack = view.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager().popBackStack();
         });
-        // ---------------------------------------------
 
         setupRecyclerView();
+        loadHistoryFromDatabase();
+
         return view;
     }
 
     private void setupRecyclerView() {
         rvActivityHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        List<MockArchiveModel> dummyData = new ArrayList<>();
-        dummyData.add(new MockArchiveModel("Leg Day Annihilation", "05/04/2026", "450 kcal | 60 mins"));
-        dummyData.add(new MockArchiveModel("Upper Body Pump", "03/04/2026", "380 kcal | 45 mins"));
-        dummyData.add(new MockArchiveModel("Morning 5K Run", "01/04/2026", "520 kcal | 28 mins"));
-        dummyData.add(new MockArchiveModel("Core & Abs", "30/03/2026", "200 kcal | 20 mins"));
-
-        ArchiveAdapter adapter = new ArchiveAdapter(dummyData);
+        adapter = new ArchiveAdapter(new ArrayList<>());
         rvActivityHistory.setAdapter(adapter);
     }
 
-    private static class MockArchiveModel {
-        String title, date, stats;
-        MockArchiveModel(String title, String date, String stats) {
-            this.title = title; this.date = date; this.stats = stats;
-        }
+    private void loadHistoryFromDatabase() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            FitnessDatabase db = FitnessDatabase.getInstance(requireContext());
+
+            // Grab history from the Home Screen DB entries
+            List<WorkoutLog> realHistory = db.workoutDao().getAllWorkoutLogs();
+
+            requireActivity().runOnUiThread(() -> {
+                adapter.setLogs(realHistory);
+            });
+        });
     }
 
-    private static class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ViewHolder> {
-        private final List<MockArchiveModel> data;
+    // =========================================================================
+    // THE ADAPTER
+    // =========================================================================
 
-        ArchiveAdapter(List<MockArchiveModel> data) { this.data = data; }
+    private static class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ViewHolder> {
+        private List<WorkoutLog> data;
+
+        ArchiveAdapter(List<WorkoutLog> data) {
+            this.data = data;
+        }
+
+        public void setLogs(List<WorkoutLog> newData) {
+            this.data = newData;
+            notifyDataSetChanged();
+        }
 
         @NonNull
         @Override
@@ -76,22 +93,25 @@ public class ActivityArchiveFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            MockArchiveModel item = data.get(position);
-            holder.tvRoutineName.setText(item.title);
+            WorkoutLog item = data.get(position);
+
+            // Map to the correct updated variables
+            holder.tvWorkoutType.setText(item.workoutType);
             holder.tvDate.setText(item.date);
-            holder.tvStats.setText(item.stats);
+            holder.tvDuration.setText(item.durationMinutes + " mins");
         }
 
         @Override
         public int getItemCount() { return data.size(); }
 
         static class ViewHolder extends RecyclerView.ViewHolder {
-            TextView tvRoutineName, tvDate, tvStats;
+            TextView tvWorkoutType, tvDate, tvDuration;
+
             ViewHolder(View itemView) {
                 super(itemView);
-                tvRoutineName = itemView.findViewById(R.id.tvRoutineName);
+                tvWorkoutType = itemView.findViewById(R.id.tvWorkoutType);
                 tvDate = itemView.findViewById(R.id.tvDate);
-                tvStats = itemView.findViewById(R.id.tvStats);
+                tvDuration = itemView.findViewById(R.id.tvDuration);
             }
         }
     }

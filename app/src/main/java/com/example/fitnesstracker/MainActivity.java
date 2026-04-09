@@ -17,9 +17,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView navHome, navRun, navWorkout, navMeal, navProfile;
 
-    // Define your colors (Use your actual res/values/colors.xml values here)
     private final int COLOR_NEON = Color.parseColor("#D4FF00");
-    private final int COLOR_INACTIVE = Color.parseColor("#808080"); // Gray
+    private final int COLOR_INACTIVE = Color.parseColor("#808080");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

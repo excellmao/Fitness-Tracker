@@ -7,13 +7,15 @@ import androidx.room.RoomDatabase;
 
 // 1. Make sure this import matches where we moved the file!
 import com.example.fitnesstracker.homescreen.models.WorkoutRoutine;
+import com.example.fitnesstracker.profile.models.UserMetricLog;
 
-@Database(entities = {WorkoutLog.class, WorkoutRoutine.class}, version = 4, exportSchema = false)
+@Database(entities = {WorkoutLog.class, WorkoutRoutine.class, UserMetricLog.class}, version = 5, exportSchema = false)
 public abstract class FitnessDatabase extends RoomDatabase {
 
     public abstract WorkoutDao workoutDao();
 
     public abstract RoutineDao routineDao();
+    public abstract MetricDao metricDao();
 
     private static volatile FitnessDatabase INSTANCE;
 

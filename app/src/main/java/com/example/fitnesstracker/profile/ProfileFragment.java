@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.database.FitnessDatabase;
+import com.example.fitnesstracker.database.MetricDao;
+import com.example.fitnesstracker.profile.models.UserMetricLog;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -24,6 +27,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ProfileFragment extends Fragment {
 
@@ -34,10 +39,10 @@ public class ProfileFragment extends Fragment {
 
     private SharedPreferences prefs;
 
-    // Dữ liệu biểu đồ động
+    // Chart Data
     private List<Entry> weightEntries;
     private List<Entry> caloEntries;
-    private float currentDayIndex = 5f; // Trục X hiện tại
+    private float currentDayIndex = 5f;
 
     public ProfileFragment() {}
 
@@ -56,30 +61,16 @@ public class ProfileFragment extends Fragment {
 
         prefs = requireContext().getSharedPreferences("KineticProfile", Context.MODE_PRIVATE);
 
-        initMockData();
         loadSavedMetrics();
         setupClickListeners();
 
-        // Vẽ biểu đồ Cân nặng mặc định khi mở app
-        drawChart(weightEntries, "Cân nặng (kg)", "#CCFF00");
+        weightEntries = new ArrayList<>();
+        caloEntries = new ArrayList<>();
+
+        // Fetch live data and draw chart
+        loadDatabaseMetrics();
 
         return view;
-    }
-
-    private void initMockData() {
-        weightEntries = new ArrayList<>();
-        weightEntries.add(new Entry(1f, 75.0f));
-        weightEntries.add(new Entry(2f, 74.5f));
-        weightEntries.add(new Entry(3f, 74.2f));
-        weightEntries.add(new Entry(4f, 73.8f));
-        weightEntries.add(new Entry(5f, 73.0f));
-
-        caloEntries = new ArrayList<>();
-        caloEntries.add(new Entry(1f, 2200f));
-        caloEntries.add(new Entry(2f, 1800f));
-        caloEntries.add(new Entry(3f, 2500f));
-        caloEntries.add(new Entry(4f, 2100f));
-        caloEntries.add(new Entry(5f, 2000f));
     }
 
     private void loadSavedMetrics() {
@@ -90,7 +81,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupClickListeners() {
-        // NÚT LƯU: Cập nhật chỉ số và vẽ thêm vào biểu đồ
+        // SAVE BUTTON
         btnSaveMetrics.setOnClickListener(v -> {
             String weightStr = etWeight.getText().toString().trim();
             String heightStr = etHeight.getText().toString().trim();
@@ -106,34 +97,77 @@ public class ProfileFragment extends Fragment {
                     .putString("weight", weightStr)
                     .apply();
 
-            // Cập nhật điểm mới lên biểu đồ cân nặng
             float newWeight = Float.parseFloat(weightStr);
             currentDayIndex += 1f;
-            weightEntries.add(new Entry(currentDayIndex, newWeight));
 
-            // Nếu đang ở tab Cân nặng thì vẽ lại luôn
-            if (rgChartToggle.getCheckedRadioButtonId() == R.id.rbChartWeight) {
-                drawChart(weightEntries, "Cân nặng (kg)", "#CCFF00");
-            }
+            // Background thread to save to Room DB
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                FitnessDatabase db = FitnessDatabase.getInstance(requireContext());
+                // Assuming 2000 cal average for newly entered weights
+                db.metricDao().insertMetric(new UserMetricLog(currentDayIndex, newWeight, 2000f));
 
-            Toast.makeText(requireContext(), "Đã cập nhật biểu đồ!", Toast.LENGTH_SHORT).show();
+                requireActivity().runOnUiThread(() -> {
+                    weightEntries.add(new Entry(currentDayIndex, newWeight));
+                    if (rgChartToggle.getCheckedRadioButtonId() == R.id.rbChartWeight) {
+                        drawChart(weightEntries, "Cân nặng (kg)", "#CCFF00");
+                    }
+                    Toast.makeText(requireContext(), "Đã cập nhật biểu đồ!", Toast.LENGTH_SHORT).show();
+                });
+            });
         });
 
-        // CHUYỂN ĐỔI BIỂU ĐỒ: Giữa Cân Nặng và Calo
+        // TOGGLE CHART
         rgChartToggle.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbChartWeight) {
-                drawChart(weightEntries, "Cân nặng (kg)", "#CCFF00"); // Màu neon
+                drawChart(weightEntries, "Cân nặng (kg)", "#CCFF00");
             } else if (checkedId == R.id.rbChartCalo) {
-                drawChart(caloEntries, "Calo tiêu thụ (kcal)", "#FF5722"); // Màu cam cho dễ phân biệt
+                drawChart(caloEntries, "Calo tiêu thụ (kcal)", "#FF5722");
             }
         });
 
+        // VIEW ARCHIVE
         btnViewArchive.setOnClickListener(v -> {
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragmentContainer, new ActivityArchiveFragment())
                     .addToBackStack(null)
                     .commit();
+        });
+    }
+
+    private void loadDatabaseMetrics() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            FitnessDatabase db = FitnessDatabase.getInstance(requireContext());
+            MetricDao dao = db.metricDao();
+
+            // Seed initial data if empty
+            if (dao.getMetricCount() == 0) {
+                dao.insertMetric(new UserMetricLog(1f, 75.0f, 2200f));
+                dao.insertMetric(new UserMetricLog(2f, 74.5f, 1800f));
+                dao.insertMetric(new UserMetricLog(3f, 74.2f, 2500f));
+                dao.insertMetric(new UserMetricLog(4f, 73.8f, 2100f));
+                dao.insertMetric(new UserMetricLog(5f, 73.0f, 2000f));
+            }
+
+            List<UserMetricLog> logs = dao.getAllMetrics();
+            float maxIndex = 0;
+
+            for (UserMetricLog log : logs) {
+                weightEntries.add(new Entry(log.dayIndex, log.weight));
+                caloEntries.add(new Entry(log.dayIndex, log.calories));
+                if (log.dayIndex > maxIndex) maxIndex = log.dayIndex;
+            }
+            currentDayIndex = maxIndex;
+
+            requireActivity().runOnUiThread(() -> {
+                if (rgChartToggle.getCheckedRadioButtonId() == R.id.rbChartWeight) {
+                    drawChart(weightEntries, "Cân nặng (kg)", "#CCFF00");
+                } else {
+                    drawChart(caloEntries, "Calo tiêu thụ (kcal)", "#FF5722");
+                }
+            });
         });
     }
 
@@ -159,6 +193,6 @@ public class ProfileFragment extends Fragment {
         chartProgress.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         chartProgress.getLegend().setTextColor(whiteColor);
 
-        chartProgress.invalidate(); // Refresh để vẽ lại
+        chartProgress.invalidate();
     }
 }

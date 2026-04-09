@@ -29,8 +29,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvProfileTitle">
-        <RadioButton android:id="@+id/rbMale" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nam" android:textColor="@android:color/white" android:buttonTint="@color/neon_yellow"/>
-        <RadioButton android:id="@+id/rbFemale" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nữ" android:textColor="@android:color/white" android:buttonTint="@color/neon_yellow"/>
+        <RadioButton android:id="@+id/rbMale" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Male" android:textColor="@android:color/white" android:buttonTint="@color/neon_yellow"/>
+        <RadioButton android:id="@+id/rbFemale" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Female" android:textColor="@android:color/white" android:buttonTint="@color/neon_yellow"/>
     </RadioGroup>
 
     <EditText
@@ -40,7 +40,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:backgroundTint="@color/neon_yellow"
-        android:hint="Chiều cao (cm)"
+        android:hint="Height (cm)"
         android:inputType="numberDecimal"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/darker_gray"
@@ -55,7 +55,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/neon_yellow"
-        android:hint="Cân nặng (kg)"
+        android:hint="Weight (kg)"
         android:inputType="numberDecimal"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/darker_gray"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/neon_yellow"
-        android:text="Lưu Chỉ Số"
+        android:text="Save"
         android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +87,7 @@
             android:id="@+id/rbChartWeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cân nặng"
+            android:text="Weight"
             android:textColor="@android:color/white"
             android:buttonTint="@color/neon_yellow"
             android:checked="true"/>
@@ -96,7 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Calo tiêu thụ"
+            android:text="Calories"
             android:textColor="@android:color/white"
             android:buttonTint="@color/neon_yellow"/>
     </RadioGroup>
@@ -116,9 +116,9 @@
         android:id="@+id/btnViewArchive"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="100dp"
         android:backgroundTint="@color/neon_yellow"
-        android:text="Xem Lịch Sử Tập Luyện"
+        android:text="Activity History"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold"

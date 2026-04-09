@@ -56,13 +56,13 @@ public class HomeFragment extends Fragment {
             seedDummyDataIfNeeded(dao, monday, formatter);
 
             // READ ACTUAL DATA
-            int monMins = dao.getTotalDurationForDate(monday.format(formatter));      // Will be 60 mins (30+30)
-            int tueMins = dao.getTotalDurationForDate(monday.plusDays(1).format(formatter)); // 0 mins
-            int wedMins = dao.getTotalDurationForDate(monday.plusDays(2).format(formatter)); // 45 mins
-            int thuMins = dao.getTotalDurationForDate(monday.plusDays(3).format(formatter)); // 0 mins
-            int friMins = dao.getTotalDurationForDate(monday.plusDays(4).format(formatter)); // 20 mins
-            int satMins = dao.getTotalDurationForDate(monday.plusDays(5).format(formatter)); // 0 mins
-            int sunMins = dao.getTotalDurationForDate(monday.plusDays(6).format(formatter)); // 0 mins
+            int monMins = dao.getTotalDurationForDate(monday.format(formatter));
+            int tueMins = dao.getTotalDurationForDate(monday.plusDays(1).format(formatter));
+            int wedMins = dao.getTotalDurationForDate(monday.plusDays(2).format(formatter));
+            int thuMins = dao.getTotalDurationForDate(monday.plusDays(3).format(formatter));
+            int friMins = dao.getTotalDurationForDate(monday.plusDays(4).format(formatter));
+            int satMins = dao.getTotalDurationForDate(monday.plusDays(5).format(formatter));
+            int sunMins = dao.getTotalDurationForDate(monday.plusDays(6).format(formatter));
 
             int maxMinsThisWeek = 1;
             int[] allMins = {monMins, tueMins, wedMins, thuMins, friMins, satMins, sunMins};
