@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:padding="20dp">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/tvWorkoutHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WORKOUTS"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Create Routine Button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCreateRoutine"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_card_dark"
+        android:drawableStart="@android:drawable/ic_input_add"
+        android:drawablePadding="12dp"
+        android:paddingStart="20dp"
+        android:text=" CREATE MY ROUTINE"
+        android:textAllCaps="true"
+        android:textColor="@color/neon_yellow"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/tvWorkoutHeader" />
+
+    <TextView
+        android:id="@+id/tvMyRoutinesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="MY ROUTINES"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnCreateRoutine" />
+
+    <!-- Routines List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRoutines"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMyRoutinesLabel"
+        tools:listitem="@android:layout/simple_list_item_2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

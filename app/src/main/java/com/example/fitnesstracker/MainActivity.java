@@ -1,6 +1,5 @@
 package com.example.fitnesstracker;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -12,6 +11,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.example.fitnesstracker.homescreen.HomeFragment;
 import com.example.fitnesstracker.profile.ProfileFragment;
+import com.example.fitnesstracker.workout.WorkoutListFragment; // IMPORT THE NEW MODULE!
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,45 +25,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 1. KEEP YOUR FULLSCREEN LOGIC
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-
         windowInsetsController.setSystemBarsBehavior(
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         );
-
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
 
+        // 2. INITIALIZE YOUR CUSTOM NAV ICONS
         navHome = findViewById(R.id.navHome);
         navRun = findViewById(R.id.navRun);
         navWorkout = findViewById(R.id.navWorkout);
         navMeal = findViewById(R.id.navMeal);
         navProfile = findViewById(R.id.navProfile);
 
+        // 3. SET DEFAULT FRAGMENT
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
         }
 
+        // 4. WIRE UP THE CLICK LISTENERS
         navHome.setOnClickListener(v -> {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
         });
 
-        //TODO: Replace with actual fragments
-        navRun.setOnClickListener(v -> {
-            // loadFragment(new RunPrepFragment());
-            updateNavUI(navRun);
-        });
-
         navWorkout.setOnClickListener(v -> {
-            // loadFragment(new WorkoutListFragment());
+            // FINALLY CONNECTING THE WORKOUT MODULE!
+            loadFragment(new WorkoutListFragment());
             updateNavUI(navWorkout);
-        });
-
-        navMeal.setOnClickListener(v -> {
-            // loadFragment(new NutritionFragment());
-            updateNavUI(navMeal);
         });
 
         navProfile.setOnClickListener(v -> {
@@ -71,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
             updateNavUI(navProfile);
         });
 
+        // Placeholder for Run and Meal
+        navRun.setOnClickListener(v -> updateNavUI(navRun));
+        navMeal.setOnClickListener(v -> updateNavUI(navMeal));
     }
 
     private void loadFragment(Fragment fragment) {

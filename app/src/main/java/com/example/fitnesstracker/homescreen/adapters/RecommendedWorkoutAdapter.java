@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.database.Routine;
 import com.example.fitnesstracker.homescreen.models.WorkoutRoutine;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class RecommendedWorkoutAdapter extends RecyclerView.Adapter<RecommendedW
 
     private List<WorkoutRoutine> workoutList;
 
-    public RecommendedWorkoutAdapter(List<WorkoutRoutine> workoutList) {
+    public RecommendedWorkoutAdapter(List<Routine> workoutList) {
         this.workoutList = workoutList;
     }
 

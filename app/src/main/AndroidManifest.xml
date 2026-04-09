@@ -22,6 +22,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.example.fitnesstracker.workout.ActiveWorkoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FitnessTracker" />
+
     </application>
 
 </manifest>

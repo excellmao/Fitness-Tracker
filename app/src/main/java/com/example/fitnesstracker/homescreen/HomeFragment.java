@@ -14,11 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.database.FitnessDatabase;
+import com.example.fitnesstracker.database.Routine;
 import com.example.fitnesstracker.database.RoutineDao;
 import com.example.fitnesstracker.database.WorkoutDao;
 import com.example.fitnesstracker.database.WorkoutLog;
 import com.example.fitnesstracker.homescreen.adapters.RecommendedWorkoutAdapter;
-import com.example.fitnesstracker.homescreen.models.WorkoutRoutine;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -33,6 +33,7 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // KEEP: Use your fragment_home layout
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         loadWeeklyChartData(view);
@@ -43,7 +44,6 @@ public class HomeFragment extends Fragment {
 
     private void loadWeeklyChartData(View view) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-
         executor.execute(() -> {
             FitnessDatabase db = FitnessDatabase.getInstance(requireContext());
             WorkoutDao dao = db.workoutDao();
@@ -52,10 +52,10 @@ public class HomeFragment extends Fragment {
             LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            // SEED DATA
+            // 1. SEED DATA (Updated with calorie parameter)
             seedDummyDataIfNeeded(dao, monday, formatter);
 
-            // READ ACTUAL DATA
+            // 2. READ MINUTES
             int monMins = dao.getTotalDurationForDate(monday.format(formatter));
             int tueMins = dao.getTotalDurationForDate(monday.plusDays(1).format(formatter));
             int wedMins = dao.getTotalDurationForDate(monday.plusDays(2).format(formatter));
@@ -64,17 +64,13 @@ public class HomeFragment extends Fragment {
             int satMins = dao.getTotalDurationForDate(monday.plusDays(5).format(formatter));
             int sunMins = dao.getTotalDurationForDate(monday.plusDays(6).format(formatter));
 
-            int maxMinsThisWeek = 1;
             int[] allMins = {monMins, tueMins, wedMins, thuMins, friMins, satMins, sunMins};
-            for (int mins : allMins) {
-                if (mins > maxMinsThisWeek) {
-                    maxMinsThisWeek = mins;
-                }
-            }
+            int maxMins = 1;
+            for (int m : allMins) if (m > maxMins) maxMins = m;
 
-            final int chartScaleMax = maxMinsThisWeek;
+            final int chartScaleMax = maxMins;
 
-            // 3. UPDATE UI
+            // 3. UPDATE BARS
             requireActivity().runOnUiThread(() -> {
                 setBarData(view.findViewById(R.id.barMon), "MON", monMins, chartScaleMax);
                 setBarData(view.findViewById(R.id.barTue), "TUE", tueMins, chartScaleMax);
@@ -89,34 +85,28 @@ public class HomeFragment extends Fragment {
 
     private void loadRecommendedRoutines(View view) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-
         executor.execute(() -> {
             FitnessDatabase db = FitnessDatabase.getInstance(requireContext());
-            RoutineDao dao = db.routineDao();
-
-            if (dao.getRoutineCount() == 0) {
-                dao.insertRoutine(new WorkoutRoutine("NEON\nSTRENGTH", "PRO LEVEL", 45, 420, R.drawable.avatar));
-                dao.insertRoutine(new WorkoutRoutine("ZEN\nFLOW", "RECOVERY", 20, 150, R.drawable.avatar));
-                dao.insertRoutine(new WorkoutRoutine("HIIT\nBURN", "INTERMEDIATE", 30, 350, R.drawable.avatar));
-            }
-
-            List<WorkoutRoutine> dbRoutines = dao.getAllRoutines();
+            // Now using the real Routine table from the workout branch
+            List<Routine> dbRoutines = db.routineDao().getAllRoutines();
 
             requireActivity().runOnUiThread(() -> {
                 RecyclerView rvRecommended = view.findViewById(R.id.rvRecommended);
                 rvRecommended.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
+                // IMPORTANT: You'll need to update RecommendedWorkoutAdapter to accept List<Routine>
                 RecommendedWorkoutAdapter adapter = new RecommendedWorkoutAdapter(dbRoutines);
                 rvRecommended.setAdapter(adapter);
             });
         });
     }
 
-    private void setBarData(View barLayout, String dayLabel, int workoutCount, int chartScaleMax) {
+    private void setBarData(View barLayout, String dayLabel, int value, int max) {
+        if (barLayout == null) return;
         TextView tvDay = barLayout.findViewById(R.id.tvDayLabel);
         tvDay.setText(dayLabel);
 
-        int percentage = (int) (((float) workoutCount / chartScaleMax) * 100);
+        int percentage = (int) (((float) value / max) * 100);
         if (percentage > 100) percentage = 100;
 
         View viewSpacer = barLayout.findViewById(R.id.viewSpacer);
@@ -131,14 +121,13 @@ public class HomeFragment extends Fragment {
         viewFill.setLayoutParams(fillParams);
     }
 
-     //TODO: Delete or comment out the call to this method before final production release!
-     // Dummy data
     private void seedDummyDataIfNeeded(WorkoutDao dao, LocalDate monday, DateTimeFormatter formatter) {
         if (dao.getWorkoutCountForDate(monday.format(formatter)) == 0) {
-            dao.insertWorkout(new WorkoutLog(monday.format(formatter), "Morning Sprint", 30));
-            dao.insertWorkout(new WorkoutLog(monday.format(formatter), "PeePee", 30));
-            dao.insertWorkout(new WorkoutLog(monday.plusDays(2).format(formatter), "Leg Day", 45));
-            dao.insertWorkout(new WorkoutLog(monday.plusDays(4).format(formatter), "Zen Flow", 20));
+            // Updated with the new 4th parameter: Calories
+            dao.insertWorkout(new WorkoutLog(monday.format(formatter), "Morning Sprint", 30, 250));
+            dao.insertWorkout(new WorkoutLog(monday.format(formatter), "PeePee", 30, 150));
+            dao.insertWorkout(new WorkoutLog(monday.plusDays(2).format(formatter), "Leg Day", 45, 400));
+            dao.insertWorkout(new WorkoutLog(monday.plusDays(4).format(formatter), "Zen Flow", 20, 100));
         }
     }
 }
