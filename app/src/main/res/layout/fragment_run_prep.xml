@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imgSmallProfile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
+
+    <TextView
+        android:id="@+id/tvLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="KINETIC"
+        android:textColor="#DFFF2E"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="@id/imgSmallProfile"
+        app:layout_constraintStart_toEndOf="@id/imgSmallProfile"
+        app:layout_constraintTop_toTopOf="@id/imgSmallProfile" />
+
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_manage"
+        app:layout_constraintBottom_toBottomOf="@id/imgSmallProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgSmallProfile"
+        app:tint="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tvSubHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:letterSpacing="0.1"
+        android:text="READY FOR PERFORMANCE"
+        android:textColor="#DFFF2E"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLogo" />
+
+    <TextView
+        android:id="@+id/tvMainHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Run"
+        android:textColor="@android:color/white"
+        android:textSize="48sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSubHeader" />
+
+    <TextView
+        android:id="@+id/tvCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="#80DFFF2E"
+        android:shadowRadius="25"
+        android:text="3"
+        android:textColor="#DFFF2E"
+        android:textSize="180sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toTopOf="@+id/llIndicatorDots"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMainHeader" />
+
+    <LinearLayout
+        android:id="@+id/llIndicatorDots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/btnStartNow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_margin="4dp"
+            android:background="#DFFF2E" />
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_margin="4dp"
+            android:background="#444444" />
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_margin="4dp"
+            android:background="#444444" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartNow"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginBottom="40dp"
+        android:text="START NOW ▶"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold|italic"
+        app:backgroundTint="#DFFF2E"
+        app:cornerRadius="32dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
