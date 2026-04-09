@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.example.fitnesstracker.homescreen.HomeFragment;
+import com.example.fitnesstracker.profile.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,9 +68,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         navProfile.setOnClickListener(v -> {
-            // loadFragment(new ProfileFragment());
+            loadFragment(new ProfileFragment());
             updateNavUI(navProfile);
         });
+
     }
 
     private void loadFragment(Fragment fragment) {
