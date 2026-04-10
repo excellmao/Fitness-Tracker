@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"> <ImageView
+    android:id="@+id/ivDetailCover"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:scaleType="centerCrop"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:src="@drawable/bg_card_dark" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#A60B0B0B"
+        app:layout_constraintTop_toTopOf="@id/ivDetailCover"
+        app:layout_constraintBottom_toBottomOf="@id/ivDetailCover"/>
+
+    <ImageButton
+        android:id="@+id/ibDetailBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/text_gray" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStartSession"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/neon_yellow"
+        android:text="START SESSION"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivDetailCover" />
+
+    <TextView
+        android:id="@+id/tvDetailRoutineName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/btnStartSession"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Hypertrophy V.2 Focus" />
+
+    <TextView
+        android:id="@+id/tvDetailPhase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/neon_yellow"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1"
+        app:layout_constraintBottom_toTopOf="@id/tvDetailRoutineName"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="PHASE 02 / STRENGTH" />
+
+    <LinearLayout
+        android:id="@+id/llStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        app:layout_constraintTop_toBottomOf="@id/ivDetailCover">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_card_dark"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvStatMinutes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@android:color/white" android:textSize="20sp" android:textStyle="bold" tools:text="45"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="MINUTES" android:textColor="@color/text_gray" android:textSize="10sp" android:letterSpacing="0.1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_card_dark"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvStatKcal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@android:color/white" android:textSize="20sp" android:textStyle="bold" tools:text="420"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="KCAL" android:textColor="@color/text_gray" android:textSize="10sp" android:letterSpacing="0.1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvLabelRoutine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        android:text="The Routine"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/llStats" />
+
+    <TextView
+        android:id="@+id/tvDetailExerciseCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/tvLabelRoutine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvLabelRoutine"
+        tools:text="6 Exercises" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDetailExercises"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelRoutine" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

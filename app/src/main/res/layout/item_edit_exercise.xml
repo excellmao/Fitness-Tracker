@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/bg_card_dark"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/ivDragHandle"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_drag_indicator"
+        app:tint="@color/text_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvEditItemName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivDragHandle"
+        app:layout_constraintEnd_toStartOf="@id/btnDeleteExercise"
+        app:layout_constraintStart_toEndOf="@id/ivDragHandle"
+        app:layout_constraintTop_toTopOf="@id/ivDragHandle"
+        tools:text="Barbell Squats" />
+
+    <ImageButton
+        android:id="@+id/btnDeleteExercise"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_delete"
+        app:tint="#FF3B30"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvEditItemName">
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SETS" android:textColor="@color/text_gray" android:textSize="10sp" android:letterSpacing="0.1" android:layout_marginBottom="8dp"/>
+            <EditText android:id="@+id/etEditSets" android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_circle_outline" android:gravity="center" android:inputType="number" android:textColor="@android:color/white" android:textSize="16sp" android:textStyle="bold" tools:text="4" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="REPS" android:textColor="@color/text_gray" android:textSize="10sp" android:letterSpacing="0.1" android:layout_marginBottom="8dp"/>
+            <EditText android:id="@+id/etEditReps" android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_circle_outline" android:gravity="center" android:inputType="number" android:textColor="@android:color/white" android:textSize="16sp" android:textStyle="bold" tools:text="10" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="REST" android:textColor="@color/text_gray" android:textSize="10sp" android:letterSpacing="0.1" android:layout_marginBottom="8dp"/>
+            <EditText android:id="@+id/etEditRest" android:layout_width="56dp" android:layout_height="56dp" android:background="@drawable/bg_circle_outline" android:gravity="center" android:inputType="number" android:textColor="@color/neon_yellow" android:textSize="16sp" android:textStyle="bold" tools:text="90s" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

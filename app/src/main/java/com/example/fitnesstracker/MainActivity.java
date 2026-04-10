@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //com.example.fitnesstracker.database.SupabaseSync.fetchExercises(this);
+
         // 1. KEEP YOUR FULLSCREEN LOGIC
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -40,20 +42,17 @@ public class MainActivity extends AppCompatActivity {
         navMeal = findViewById(R.id.navMeal);
         navProfile = findViewById(R.id.navProfile);
 
-        // 3. SET DEFAULT FRAGMENT
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
         }
 
-        // 4. WIRE UP THE CLICK LISTENERS
         navHome.setOnClickListener(v -> {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
         });
 
         navWorkout.setOnClickListener(v -> {
-            // FINALLY CONNECTING THE WORKOUT MODULE!
             loadFragment(new WorkoutListFragment());
             updateNavUI(navWorkout);
         });
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
             updateNavUI(navProfile);
         });
 
-        // Placeholder for Run and Meal
         navRun.setOnClickListener(v -> updateNavUI(navRun));
         navMeal.setOnClickListener(v -> updateNavUI(navMeal));
     }

@@ -8,18 +8,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.database.Routine;
-import com.example.fitnesstracker.homescreen.models.WorkoutRoutine;
 
 import java.util.List;
 
 public class RecommendedWorkoutAdapter extends RecyclerView.Adapter<RecommendedWorkoutAdapter.WorkoutViewHolder> {
 
-    private List<WorkoutRoutine> workoutList;
+    public interface OnRoutineClickListener {
+        void onRoutineClick(int routineId);
+    }
 
-    public RecommendedWorkoutAdapter(List<Routine> workoutList) {
+    private List<Routine> workoutList;
+    private OnRoutineClickListener listener;
+    public RecommendedWorkoutAdapter(List<Routine> workoutList, OnRoutineClickListener listener) {
         this.workoutList = workoutList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -31,13 +36,30 @@ public class RecommendedWorkoutAdapter extends RecyclerView.Adapter<RecommendedW
 
     @Override
     public void onBindViewHolder(@NonNull WorkoutViewHolder holder, int position) {
-        WorkoutRoutine routine = workoutList.get(position);
+        Routine routine = workoutList.get(position);
 
-        holder.tvTitle.setText(routine.getTitle());
-        holder.tvLevel.setText(routine.getLevel());
-        holder.tvDuration.setText("⏱ " + routine.getDurationMinutes() + " MIN");
-        holder.tvCalories.setText("🔥 " + routine.getCaloriesBurned() + " CAL");
-        holder.ivImage.setImageResource(routine.getImageResource());
+        holder.tvTitle.setText(routine.getName());
+        holder.tvLevel.setText(routine.getPhase());
+        holder.tvDuration.setText("⏱ " + routine.getTotalMinutes() + " MIN");
+        holder.tvCalories.setText("🔥 " + routine.getTotalCalories() + " KCAL");
+
+        String imageUrl = routine.getCoverImageUrl();
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(imageUrl)
+                    .centerCrop() // Makes it fill the rounded card nicely
+                    .into(holder.ivImage);
+        } else {
+            // Fallback if the database URL is empty
+            holder.ivImage.setImageResource(R.drawable.bg_card_dark);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onRoutineClick(routine.getId());
+            }
+        });
     }
 
     @Override

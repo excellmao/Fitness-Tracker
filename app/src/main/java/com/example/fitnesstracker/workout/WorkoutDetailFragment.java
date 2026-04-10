@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +14,14 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.fitnesstracker.R;
 import com.example.fitnesstracker.database.ExerciseWithSettings;
 import com.example.fitnesstracker.database.FitnessDatabase;
 import com.example.fitnesstracker.database.Routine;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +30,10 @@ public class WorkoutDetailFragment extends Fragment {
     private int routineId;
     private ExerciseDetailAdapter adapter;
     private FitnessDatabase db;
+
+    // UI Elements
+    private ImageView ivDetailCover;
+    private TextView tvPhase; // For "PHASE 02 / STRENGTH"
 
     @Nullable
     @Override
@@ -48,6 +57,10 @@ public class WorkoutDetailFragment extends Fragment {
         RecyclerView rvExercises   = view.findViewById(R.id.rvDetailExercises);
         AppCompatButton btnStart   = view.findViewById(R.id.btnStartSession);
 
+        // NEW: Grab the ImageView for the Cover and the Phase text
+        ivDetailCover = view.findViewById(R.id.ivDetailCover);
+        tvPhase       = view.findViewById(R.id.tvDetailPhase);
+
         adapter = new ExerciseDetailAdapter(new ArrayList<>());
         rvExercises.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvExercises.setAdapter(adapter);
@@ -69,34 +82,55 @@ public class WorkoutDetailFragment extends Fragment {
     private void loadData(TextView tvName, TextView tvCount, TextView tvMinutes, TextView tvKcal) {
         new Thread(() -> {
             List<ExerciseWithSettings> exercises = db.routineDao().getExercisesForRoutine(routineId);
-
-            // Estimate session duration: multiply sets × ~1.5 min/set per exercise + rest
-            int totalMinutes = 0;
-            for (ExerciseWithSettings ex : exercises) {
-                int workTime = (ex.durationSeconds > 0)
-                        ? ex.sets * ex.durationSeconds
-                        : ex.sets * 45; // estimate 45s per reps set
-                int restTime = ex.sets * ex.restSeconds;
-                totalMinutes += (workTime + restTime) / 60;
-            }
-            final int minutes = Math.max(totalMinutes, 1);
-
-            // Get routine name
             List<Routine> routines = db.routineDao().getAllRoutines();
-            String name = "Routine";
-            for (Routine r : routines) {
-                if (r.getId() == routineId) { name = r.getName(); break; }
-            }
-            final String routineName = name;
 
-            final int kcal = minutes * 8;
-            requireActivity().runOnUiThread(() -> {
-                tvName.setText(routineName);
-                tvCount.setText(exercises.size() + " Exercises");
-                tvMinutes.setText(String.valueOf(minutes));
-                tvKcal.setText(String.valueOf(kcal));
-                adapter.setExercises(exercises);
-            });
+            Routine targetRoutine = null;
+            for (Routine r : routines) {
+                if (r.getId() == routineId) {
+                    targetRoutine = r;
+                    break;
+                }
+            }
+
+            if (targetRoutine != null) {
+                final Routine finalRoutine = targetRoutine;
+
+                requireActivity().runOnUiThread(() -> {
+                    // 1. Set the exact Text from the Database
+                    tvName.setText(finalRoutine.getName());
+                    if (tvPhase != null) tvPhase.setText(finalRoutine.getPhase());
+                    tvCount.setText(exercises.size() + " Exercises");
+                    tvMinutes.setText(String.valueOf(finalRoutine.getTotalMinutes()));
+                    tvKcal.setText(String.valueOf(finalRoutine.getTotalCalories()));
+
+                    // 2. Load the GIF/Image from your Assets using Glide
+                    String coverUrl = finalRoutine.getCoverImageUrl();
+                    if (ivDetailCover != null && coverUrl != null && !coverUrl.isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(coverUrl) // This handles "file:///android_asset/..." perfectly
+                                .centerCrop()
+                                .into(ivDetailCover);
+                    }
+
+                    adapter.setExercises(exercises);
+                });
+            }
         }).start();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Changed from BottomNavigationView to generic View
+        View navBar = requireActivity().findViewById(R.id.bottomNavContainer);
+        if (navBar != null) navBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Changed from BottomNavigationView to generic View
+        View navBar = requireActivity().findViewById(R.id.bottomNavContainer);
+        if (navBar != null) navBar.setVisibility(View.VISIBLE);
     }
 }

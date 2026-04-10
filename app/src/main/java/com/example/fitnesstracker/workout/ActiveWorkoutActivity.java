@@ -1,118 +1,290 @@
 package com.example.fitnesstracker.workout;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Button;
+import android.os.CountDownTimer;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.fitnesstracker.R;
+import com.example.fitnesstracker.database.ExerciseWithSettings;
 import com.example.fitnesstracker.database.FitnessDatabase;
-import com.example.fitnesstracker.database.Routine;
-import com.example.fitnesstracker.database.WorkoutLog;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ActiveWorkoutActivity extends AppCompatActivity {
 
-    private TextView tvActiveRoutineName, tvTimer;
-    private Button btnFinishWorkout;
+    // UI Containers
+    private ConstraintLayout clActive, clRest, clSummary;
 
+    // Active State UI
+    private ImageView ivActiveGif;
+    private TextView tvActiveName, tvActiveSetInfo, tvActiveNextUp, tvActiveTimer;
+    private ImageButton btnPause;
+
+    // Rest State UI
+    private TextView tvRestTimer, tvRestNextName, tvRestPhase;
+    private ImageView ivRestNextThumb;
+
+    // Summary State UI
+    private TextView tvSummaryTime, tvSummaryKcal;
+
+    // Workout Data
+    private List<ExerciseWithSettings> exercises = new ArrayList<>();
+    private int currentIndex = 0;
+    private int currentSet = 1;
     private int routineId;
-    private String routineName = "Custom Workout";
-    private FitnessDatabase db;
 
-    // Stopwatch logic
-    private int elapsedSeconds = 0;
-    private boolean isRunning = true;
-    private final Handler timerHandler = new Handler(Looper.getMainLooper());
-    private final Runnable timerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (isRunning) {
-                elapsedSeconds++;
-                int minutes = elapsedSeconds / 60;
-                int seconds = elapsedSeconds % 60;
-                // Formats the timer to look like 05:09
-                tvTimer.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
-                timerHandler.postDelayed(this, 1000); // Run again in 1 second
-            }
-        }
-    };
+    // Timers & Stats
+    private CountDownTimer currentTimer;
+    private long timeLeftInMillis;
+    private boolean isTimerRunning = false;
+    private long totalSessionStartTime; // To calculate total workout time
+
+    // Enums for clarity
+    private enum State { ACTIVE, REST, SUMMARY }
+    private State currentState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_workout);
 
-        tvActiveRoutineName = findViewById(R.id.tvActiveRoutineName);
-        tvTimer = findViewById(R.id.tvTimer);
-        btnFinishWorkout = findViewById(R.id.btnFinishWorkout);
-
-        db = FitnessDatabase.getInstance(this);
         routineId = getIntent().getIntExtra("routine_id", -1);
+        totalSessionStartTime = System.currentTimeMillis();
 
-        loadRoutineData();
-
-        // Start the stopwatch
-        timerHandler.postDelayed(timerRunnable, 1000);
-
-        btnFinishWorkout.setOnClickListener(v -> finishAndLogWorkout());
+        initViews();
+        setupClickListeners();
+        fetchWorkoutData();
     }
 
-    private void loadRoutineData() {
-        if (routineId == -1) return;
+    private void initViews() {
+        // Containers
+        clActive = findViewById(R.id.clStateActive);
+        clRest = findViewById(R.id.clStateRest);
+        clSummary = findViewById(R.id.clStateSummary);
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            List<Routine> routines = db.routineDao().getAllRoutines();
-            for (Routine r : routines) {
-                if (r.getId() == routineId) {
-                    routineName = r.getName();
-                    break;
+        // Active
+        ivActiveGif = findViewById(R.id.ivActiveGif);
+        tvActiveName = findViewById(R.id.tvActiveName);
+        tvActiveSetInfo = findViewById(R.id.tvActiveSetInfo);
+        tvActiveNextUp = findViewById(R.id.tvActiveNextUp);
+        tvActiveTimer = findViewById(R.id.tvActiveTimer);
+        btnPause = findViewById(R.id.btnActivePause);
+
+        // Rest
+        tvRestTimer = findViewById(R.id.tvRestTimer);
+        tvRestNextName = findViewById(R.id.tvRestNextName);
+        tvRestPhase = findViewById(R.id.tvRestPhase);
+        ivRestNextThumb = findViewById(R.id.ivRestNextThumb);
+
+        // Summary
+        tvSummaryTime = findViewById(R.id.tvSummaryTime);
+        tvSummaryKcal = findViewById(R.id.tvSummaryKcal);
+    }
+
+    private void setupClickListeners() {
+        // Global Close Button
+        findViewById(R.id.ibCloseSession).setOnClickListener(v -> finish());
+
+        // Skip buttons (Both Active and Rest use the same logic: go to next step)
+        findViewById(R.id.btnActiveSkip).setOnClickListener(v -> moveToNextStep());
+        findViewById(R.id.btnRestSkip).setOnClickListener(v -> moveToNextStep());
+
+        // Summary Done Button
+        findViewById(R.id.btnSummaryDone).setOnClickListener(v -> finish());
+
+        // Pause Button (Bonus: simple pause/resume logic)
+        btnPause.setOnClickListener(v -> {
+            if (isTimerRunning) {
+                pauseTimer();
+                btnPause.setImageResource(R.drawable.ic_play); // Assuming you have a play icon!
+            } else {
+                startTimer(timeLeftInMillis);
+                btnPause.setImageResource(R.drawable.ic_pause);
+            }
+        });
+    }
+
+    private void fetchWorkoutData() {
+        new Thread(() -> {
+            FitnessDatabase db = FitnessDatabase.getInstance(this);
+            exercises = db.routineDao().getExercisesForRoutine(routineId);
+
+            if (!exercises.isEmpty()) {
+                runOnUiThread(() -> startActiveExercise());
+            } else {
+                runOnUiThread(this::finish); // Failsafe if empty
+            }
+        }).start();
+    }
+
+    // ==========================================
+    // THE STATE MACHINE
+    // ==========================================
+
+    private void switchState(State newState) {
+        currentState = newState;
+        clActive.setVisibility(newState == State.ACTIVE ? View.VISIBLE : View.GONE);
+        clRest.setVisibility(newState == State.REST ? View.VISIBLE : View.GONE);
+        clSummary.setVisibility(newState == State.SUMMARY ? View.VISIBLE : View.GONE);
+
+        // Update the header text depending on state
+        TextView tvHeader = findViewById(R.id.tvHeaderStatus);
+        if (newState == State.SUMMARY) {
+            tvHeader.setText("WORKOUT COMPLETE");
+        } else {
+            tvHeader.setText("WORKOUT IN PROGRESS");
+        }
+    }
+
+    private void startActiveExercise() {
+        switchState(State.ACTIVE);
+        ExerciseWithSettings currentEx = exercises.get(currentIndex);
+
+        // 1. Update Text
+        tvActiveName.setText(currentEx.name.toUpperCase());
+        tvActiveSetInfo.setText("Set " + currentSet + " of " + currentEx.sets);
+
+        // 2. Determine "Next Up"
+        if (currentSet < currentEx.sets) {
+            tvActiveNextUp.setText(currentEx.name + " (Set " + (currentSet + 1) + ")");
+        } else if (currentIndex < exercises.size() - 1) {
+            tvActiveNextUp.setText(exercises.get(currentIndex + 1).name);
+        } else {
+            tvActiveNextUp.setText("Workout Complete!");
+        }
+
+        // 3. Load GIF from Assets
+        if (currentEx.gifUrl != null && !currentEx.gifUrl.isEmpty()) {
+            Glide.with(this).asGif().load(currentEx.gifUrl).centerCrop().into(ivActiveGif);
+        }
+
+        // 4. Start Timer (Fallback to 45s if it's a rep-only exercise)
+        long duration = currentEx.durationSeconds > 0 ? currentEx.durationSeconds * 1000L : 45000L;
+        startTimer(duration);
+    }
+
+    private void startRestPeriod() {
+        switchState(State.REST);
+        ExerciseWithSettings nextEx = exercises.get(currentIndex);
+
+        // 1. Update Text
+        tvRestPhase.setText("PREPARING FOR SET " + currentSet);
+        tvRestNextName.setText(nextEx.name);
+
+        // 2. Load Static Image for Next Up (Glide automatically freezes GIFs into static images!)
+        if (nextEx.gifUrl != null && !nextEx.gifUrl.isEmpty()) {
+            Glide.with(this).load(nextEx.gifUrl).centerCrop().into(ivRestNextThumb);
+        }
+
+        // 3. Start Rest Timer
+        long restTime = nextEx.restSeconds > 0 ? nextEx.restSeconds * 1000L : 60000L;
+        startTimer(restTime);
+    }
+
+    private void showSummary() {
+        switchState(State.SUMMARY);
+        cancelTimer();
+
+        // Calculate total time spent in milliseconds
+        long totalMillis = System.currentTimeMillis() - totalSessionStartTime;
+        int totalMinutes = (int) (totalMillis / 1000) / 60;
+        int totalSeconds = (int) (totalMillis / 1000) % 60;
+
+        // Simple calorie math for the demo (8 kcal per minute)
+        int estimatedKcal = Math.max(1, totalMinutes * 8);
+
+        tvSummaryTime.setText(String.format(Locale.getDefault(), "%02d:%02d", totalMinutes, totalSeconds));
+        tvSummaryKcal.setText(String.valueOf(estimatedKcal));
+    }
+
+    // ==========================================
+    // THE BRAIN (Logic Flow)
+    // ==========================================
+
+    private void moveToNextStep() {
+        cancelTimer();
+        ExerciseWithSettings currentEx = exercises.get(currentIndex);
+
+        if (currentState == State.ACTIVE) {
+            // Did we finish the last set of the exercise?
+            if (currentSet < currentEx.sets) {
+                currentSet++;
+                startRestPeriod(); // Rest between sets
+            } else {
+                // Move to the next exercise entirely
+                currentIndex++;
+                if (currentIndex < exercises.size()) {
+                    currentSet = 1;
+                    startRestPeriod(); // Rest between exercises
+                } else {
+                    showSummary(); // No more exercises left!
                 }
             }
-            runOnUiThread(() -> tvActiveRoutineName.setText(routineName));
-        });
+        } else if (currentState == State.REST) {
+            // Rest is over, start the actual exercise
+            startActiveExercise();
+        }
     }
 
-    private void finishAndLogWorkout() {
-        // 1. Stop the clock
-        isRunning = false;
-        timerHandler.removeCallbacks(timerRunnable);
+    // ==========================================
+    // TIMER UTILS
+    // ==========================================
 
-        // 2. Do the math
-        int durationMinutes = Math.max(1, elapsedSeconds / 60); // Minimum 1 min
-        int estimatedCalories = durationMinutes * 8; // Roughly 8 kcal per minute of lifting
+    private void startTimer(long millis) {
+        cancelTimer();
+        timeLeftInMillis = millis;
+        isTimerRunning = true;
 
-        String todayDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        currentTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
+                updateTimerText();
+            }
 
-        // 3. THE MAGIC BRIDGE: Save it to your History database!
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            db.workoutDao().insertWorkout(
-                    new WorkoutLog(todayDate, routineName, durationMinutes, estimatedCalories)
-            );
+            @Override
+            public void onFinish() {
+                isTimerRunning = false;
+                moveToNextStep(); // Automatically transition when timer hits 0!
+            }
+        }.start();
+    }
 
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Workout saved to History!", Toast.LENGTH_SHORT).show();
-                finish(); // This closes the activity and sends them back to the app
-            });
-        });
+    private void pauseTimer() {
+        cancelTimer();
+        isTimerRunning = false;
+    }
+
+    private void cancelTimer() {
+        if (currentTimer != null) {
+            currentTimer.cancel();
+        }
+    }
+
+    private void updateTimerText() {
+        int minutes = (int) (timeLeftInMillis / 1000) / 60;
+        int seconds = (int) (timeLeftInMillis / 1000) % 60;
+        String timeFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+
+        if (currentState == State.ACTIVE) {
+            tvActiveTimer.setText(timeFormatted);
+        } else if (currentState == State.REST) {
+            tvRestTimer.setText(timeFormatted);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        isRunning = false;
-        timerHandler.removeCallbacks(timerRunnable);
+        cancelTimer(); // Prevent crashes if the user closes the app while timer is ticking!
     }
 }

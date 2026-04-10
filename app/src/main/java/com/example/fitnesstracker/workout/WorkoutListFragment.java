@@ -26,21 +26,24 @@ public class WorkoutListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Rule 2: Inflate view and call findViewById on the inflated object
         View view = inflater.inflate(R.layout.fragment_workout_list, container, false);
 
         rvRoutines = view.findViewById(R.id.rvRoutines);
         Button btnCreateRoutine = view.findViewById(R.id.btnCreateRoutine);
 
-        // Rule 2: Use requireContext()
         db = FitnessDatabase.getInstance(requireContext());
 
         setupRecyclerView();
 
+        // CHANGED: Open EditRoutineFragment in "Create Mode" (ID = -1)
         btnCreateRoutine.setOnClickListener(v -> {
-            // Rule 3: Fragment-to-Fragment Navigation
+            EditRoutineFragment createFragment = new EditRoutineFragment();
+            Bundle args = new Bundle();
+            args.putInt("routine_id", -1); // -1 tells it to start with a blank slate
+            createFragment.setArguments(args);
+
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, new CreateRoutineFragment())
+                    .replace(R.id.fragmentContainer, createFragment)
                     .addToBackStack(null)
                     .commit();
         });
@@ -53,31 +56,39 @@ public class WorkoutListFragment extends Fragment {
     private void setupRecyclerView() {
         rvRoutines.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new RoutineAdapter(
-            new ArrayList<>(),
-            // onRoutineClick → open detail
-            routine -> {
-                WorkoutDetailFragment detailFragment = new WorkoutDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putInt("routine_id", routine.getId());
-                detailFragment.setArguments(bundle);
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, detailFragment)
-                        .addToBackStack(null)
-                        .commit();
-            },
-            // onEdit → open CreateRoutineFragment in edit mode
-            routine -> requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer,
-                            CreateRoutineFragment.newEditInstance(routine.getId()))
-                    .addToBackStack(null)
-                    .commit(),
-            // onDelete → confirm dialog then delete
-            routine -> new AlertDialog.Builder(requireContext())
-                    .setTitle("Xóa routine")
-                    .setMessage("Bạn có chắc muốn xóa \"" + routine.getName() + "\" không?")
-                    .setPositiveButton("Xóa", (d, w) -> deleteRoutine(routine))
-                    .setNegativeButton("Hủy", null)
-                    .show()
+                new ArrayList<>(),
+                // onRoutineClick → open detail
+                routine -> {
+                    WorkoutDetailFragment detailFragment = new WorkoutDetailFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("routine_id", routine.getId());
+                    detailFragment.setArguments(bundle);
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentContainer, detailFragment)
+                            .addToBackStack(null)
+                            .commit();
+                },
+
+                // CHANGED: Open EditRoutineFragment in "Edit Mode" (Passes actual ID)
+                routine -> {
+                    EditRoutineFragment editFragment = new EditRoutineFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("routine_id", routine.getId()); // Passes the real ID to load existing data
+                    editFragment.setArguments(args);
+
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentContainer, editFragment)
+                            .addToBackStack(null)
+                            .commit();
+                },
+
+                // onDelete → confirm dialog then delete
+                routine -> new AlertDialog.Builder(requireContext())
+                        .setTitle("Delete routine")
+                        .setMessage("Do you want to delete \"" + routine.getName() + "\"?")
+                        .setPositiveButton("Xóa", (d, w) -> deleteRoutine(routine))
+                        .setNegativeButton("Hủy", null)
+                        .show()
         );
         rvRoutines.setAdapter(adapter);
     }

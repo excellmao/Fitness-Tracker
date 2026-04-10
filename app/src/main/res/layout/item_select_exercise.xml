@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card_dark"
+    android:padding="16dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvThumbContainer"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#1C1C1E"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivSelectThumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/bg_card_dark" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvSelectName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/tvSelectDetails"
+        app:layout_constraintEnd_toStartOf="@id/btnAddExercise"
+        app:layout_constraintStart_toEndOf="@id/cvThumbContainer"
+        app:layout_constraintTop_toTopOf="@id/cvThumbContainer"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Lat Pulldowns" />
+
+    <TextView
+        android:id="@+id/tvSelectDetails"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/text_gray"
+        android:textSize="12sp"
+        android:letterSpacing="0.05"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toBottomOf="@id/cvThumbContainer"
+        app:layout_constraintEnd_toStartOf="@id/btnAddExercise"
+        app:layout_constraintStart_toEndOf="@id/cvThumbContainer"
+        app:layout_constraintTop_toBottomOf="@id/tvSelectName"
+        tools:text="BACK • STRENGTH" />
+
+    <ImageButton
+        android:id="@+id/btnAddExercise"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_pill_yellow"
+        android:src="@drawable/ic_add"
+        app:tint="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

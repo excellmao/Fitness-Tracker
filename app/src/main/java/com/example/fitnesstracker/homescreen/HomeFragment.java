@@ -19,6 +19,7 @@ import com.example.fitnesstracker.database.RoutineDao;
 import com.example.fitnesstracker.database.WorkoutDao;
 import com.example.fitnesstracker.database.WorkoutLog;
 import com.example.fitnesstracker.homescreen.adapters.RecommendedWorkoutAdapter;
+import com.example.fitnesstracker.workout.WorkoutListFragment;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -94,9 +95,29 @@ public class HomeFragment extends Fragment {
                 RecyclerView rvRecommended = view.findViewById(R.id.rvRecommended);
                 rvRecommended.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
-                // IMPORTANT: You'll need to update RecommendedWorkoutAdapter to accept List<Routine>
-                RecommendedWorkoutAdapter adapter = new RecommendedWorkoutAdapter(dbRoutines);
+                RecommendedWorkoutAdapter adapter = new RecommendedWorkoutAdapter(dbRoutines, routineId -> {
+                    // This is the missing Click Listener!
+                    com.example.fitnesstracker.workout.WorkoutDetailFragment detailFragment = new com.example.fitnesstracker.workout.WorkoutDetailFragment();
+
+                    android.os.Bundle args = new android.os.Bundle();
+                    args.putInt("routine_id", routineId);
+                    detailFragment.setArguments(args);
+
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentContainer, detailFragment)
+                            .addToBackStack(null)
+                            .commit();
+                });
                 rvRecommended.setAdapter(adapter);
+
+                TextView tvViewAll = view.findViewById(R.id.tvViewAll); // Make sure this ID matches your XML
+                tvViewAll.setOnClickListener(v -> {
+                    // Navigate to the list of all routines
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentContainer, new WorkoutListFragment()) // Your fragment name from the project tree!
+                            .addToBackStack(null)
+                            .commit();
+                });
             });
         });
     }
