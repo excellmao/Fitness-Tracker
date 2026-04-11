@@ -45,6 +45,11 @@
             android:name="com.example.fitnesstracker.run.ActiveRunActivity"
             android:exported="false" />
 
+        <activity
+            android:name="com.example.fitnesstracker.run.RunSummaryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FitnessTracker" />
+
         <receiver
             android:name=".nutrition.WaterLogReceiver"
             android:exported="false">

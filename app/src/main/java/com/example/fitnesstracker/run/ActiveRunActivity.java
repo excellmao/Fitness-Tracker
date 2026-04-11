@@ -66,6 +66,8 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
     private long startTimeMillis = 0L;
     private long elapsedMillis   = 0L;
 
+    private float userWeightKg = 70f;
+
     private final Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
@@ -82,12 +84,24 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_run);
 
+        android.content.SharedPreferences prefs = getSharedPreferences("FitnessPrefs", android.content.Context.MODE_PRIVATE);
+        userWeightKg = prefs.getFloat("user_weight", 70f);
+
         initViews();
         setupMap();
         setupLocationServices();
 
         btnPauseResume.setOnClickListener(v -> togglePauseResume());
         btnStop.setOnClickListener(v -> stopRun());
+
+        new Thread(() -> {
+            Float realWeight = com.example.fitnesstracker.database.FitnessDatabase.getInstance(this)
+                    .metricDao().getLatestWeightSync();
+
+            if (realWeight != null && realWeight > 0) {
+                userWeightKg = realWeight;
+            }
+        }).start();
     }
 
     private void initViews() {
@@ -195,36 +209,22 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
      * CẬP NHẬT: Thay vì finish(), hàm này sẽ chuyển sang RunSummaryFragment
      */
     private void stopRun() {
-        // 1. Dừng mọi trạng thái chạy và GPS
         isRunning = false;
         timerHandler.removeCallbacks(timerRunnable);
         if (fusedLocationClient != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
 
-        // 2. Thu thập dữ liệu cuối cùng từ UI
-        String finalDuration = tvDuration.getText().toString();
-        String finalDistance = tvDistance.getText().toString();
-        String finalCalories = tvCalories.getText().toString();
-        String finalPace     = tvAvgPace.getText().toString();
+        // Launch the Full-Screen Summary Activity
+        android.content.Intent intent = new android.content.Intent(this, RunSummaryActivity.class);
+        intent.putExtra("duration_key", tvDuration.getText().toString());
+        intent.putExtra("distance_key", tvDistance.getText().toString());
+        intent.putExtra("calories_key", tvCalories.getText().toString());
+        intent.putExtra("pace_key", tvAvgPace.getText().toString());
+        intent.putParcelableArrayListExtra("route_points", new java.util.ArrayList<>(routePoints));
+        startActivity(intent);
 
-        // 3. Khởi tạo Fragment tổng kết
-        RunSummaryFragment summaryFragment = new RunSummaryFragment();
-
-        // 4. Đóng gói dữ liệu để gửi sang Fragment
-        Bundle args = new Bundle();
-        args.putString("duration_key", finalDuration);
-        args.putString("distance_key", finalDistance);
-        args.putString("calories_key", finalCalories);
-        args.putString("pace_key", finalPace);
-        summaryFragment.setArguments(args);
-
-        // 5. Thực hiện chuyển đổi màn hình (đè lên toàn bộ Activity hiện tại)
-        getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(android.R.id.content, summaryFragment)
-                .addToBackStack(null) // Cho phép ấn back để xem lại map nếu cần
-                .commit();
+        finish();
     }
 
     private void updateTimerUI(long millis) {
@@ -237,7 +237,10 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
     private void updateMetricsUI() {
         float km = totalDistanceMeters / 1000f;
         tvDistance.setText(String.format(Locale.getDefault(), "%.2f km", km));
-        tvCalories.setText(String.format(Locale.getDefault(), "%d kcal", (int)(km * 60)));
+
+        // REAL RUNNING MATH: Distance(km) * Weight(kg) * 1.036
+        int burnedKcal = (int) (km * userWeightKg * 1.036);
+        tvCalories.setText(String.format(Locale.getDefault(), "%d kcal", burnedKcal));
 
         if (km > 0.01f) {
             float paceSecs = (elapsedMillis / 1000f) / km;

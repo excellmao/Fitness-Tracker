@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0A0A0A"
@@ -11,37 +12,16 @@
         android:layout_height="wrap_content"
         android:padding="20dp">
 
-        <View
-            android:id="@+id/ivAvatar"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:background="@android:drawable/ic_menu_gallery"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvAppName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="KINETIC"
-            android:textColor="#D4FF00"
-            android:textSize="18sp"
-            android:textStyle="bold|italic"
-            app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ivAvatar" />
-
         <TextView
             android:id="@+id/tvSessionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:text="SESSION COMPLETE"
             android:textColor="#A0A0A0"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -63,7 +43,13 @@
             app:cardCornerRadius="25dp"
             app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/tvTitle">
-            <View android:layout_width="match_parent" android:layout_height="match_parent" android:alpha="0.1" android:background="#FFFFFF" />
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapLite"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:liteMode="true" />
+
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -80,7 +66,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOTAL DISTANCE" android:textColor="#A0A0A0" android:textSize="10sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="8.42 KM" android:textColor="#FFFFFF" android:textSize="35sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvSumDistance" android:layout_width="wrap_content" android:layout_height="wrap_content" tools:text="8.42 KM" android:textColor="#FFFFFF" android:textSize="35sp" android:textStyle="bold" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -102,7 +88,7 @@
                 app:cardCornerRadius="25dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="15dp">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOTAL TIME" android:textColor="#A0A0A0" android:textSize="10sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00:42:15" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tvSumDuration" android:layout_width="wrap_content" android:layout_height="wrap_content" tools:text="00:42:15" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -119,13 +105,16 @@
                         android:layout_height="wrap_content"
                         android:text="AVG PACE"
                         android:textColor="#A0A0A0"
-                        android:textSize="10sp" /> <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="5'02\"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:textStyle="bold" /> </LinearLayout>
+                        android:textSize="10sp" />
+                    <TextView
+                        android:id="@+id/tvSumPace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="5'02&quot;"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>
 
@@ -139,7 +128,7 @@
             app:layout_constraintTop_toBottomOf="@id/statsRow">
             <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp">
                 <TextView android:id="@+id/tvCalLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CALORIES BURNED" android:textColor="#000000" android:textSize="10sp" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/tvCalLabel" android:text="420 kcal" android:textColor="#000000" android:textSize="30sp" android:textStyle="bold" />
+                <TextView android:id="@+id/tvSumCalories" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/tvCalLabel" tools:text="420 kcal" android:textColor="#000000" android:textSize="30sp" android:textStyle="bold" />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 

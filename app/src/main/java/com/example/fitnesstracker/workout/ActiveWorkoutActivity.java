@@ -51,6 +51,7 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
     // Enums for clarity
     private enum State { ACTIVE, REST, SUMMARY }
     private State currentState;
+    private float userWeightKg = 70f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,15 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
         initViews();
         setupClickListeners();
         fetchWorkoutData();
+
+        new Thread(() -> {
+            Float realWeight = com.example.fitnesstracker.database.FitnessDatabase.getInstance(this)
+                    .metricDao().getLatestWeightSync();
+
+            if (realWeight != null && realWeight > 0) {
+                userWeightKg = realWeight;
+            }
+        }).start();
     }
 
     private void initViews() {
@@ -194,21 +204,20 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
         switchState(State.SUMMARY);
         cancelTimer();
 
-        // Calculate total time spent in milliseconds
         long totalMillis = System.currentTimeMillis() - totalSessionStartTime;
         int totalMinutes = (int) (totalMillis / 1000) / 60;
         int totalSeconds = (int) (totalMillis / 1000) % 60;
 
-        // Simple calorie math for the demo (8 kcal per minute)
-        int estimatedKcal = Math.max(1, totalMinutes * 8);
+        // REAL WORKOUT MATH: 6.0 METs * Weight(kg) * Time(hours)
+        float timeInHours = totalMinutes / 60f;
 
-        tvSummaryTime.setText(String.format(Locale.getDefault(), "%02d:%02d", totalMinutes, totalSeconds));
-        tvSummaryKcal.setText(String.valueOf(estimatedKcal));
+        // Uses the dynamic weight we fetched in onCreate!
+        int burnedKcal = (int) (6.0 * userWeightKg * timeInHours);
+
+        tvSummaryTime.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d", totalMinutes, totalSeconds));
+        tvSummaryKcal.setText(String.valueOf(Math.max(1, burnedKcal)));
     }
 
-    // ==========================================
-    // THE BRAIN (Logic Flow)
-    // ==========================================
 
     private void moveToNextStep() {
         cancelTimer();

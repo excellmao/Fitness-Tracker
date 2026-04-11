@@ -36,6 +36,21 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // KEEP: Use your fragment_home layout
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View btnQuickRun = view.findViewById(R.id.btnQuickRun);
+        View btnQuickWorkout = view.findViewById(R.id.btnQuickWorkout);
+        View btnQuickMeal = view.findViewById(R.id.btnQuickMeal);
+
+        if (btnQuickRun != null) {
+            btnQuickRun.setOnClickListener(v -> requireActivity().findViewById(R.id.navRun).performClick());
+        }
+
+        if (btnQuickWorkout != null) {
+            btnQuickWorkout.setOnClickListener(v -> requireActivity().findViewById(R.id.navWorkout).performClick());
+        }
+
+        if (btnQuickMeal != null) {
+            btnQuickMeal.setOnClickListener(v -> requireActivity().findViewById(R.id.navMeal).performClick());
+        }
 
         loadWeeklyChartData(view);
         loadRecommendedRoutines(view);

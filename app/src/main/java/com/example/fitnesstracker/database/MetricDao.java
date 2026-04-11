@@ -21,4 +21,7 @@ public interface MetricDao {
 
     @Query("SELECT COUNT(*) FROM user_metrics")
     int getMetricCount();
+
+    @Query("SELECT weight FROM user_metrics ORDER BY dayIndex DESC LIMIT 1")
+    Float getLatestWeightSync();
 }
