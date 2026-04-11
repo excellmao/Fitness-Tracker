@@ -82,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
             updateNavUI(navProfile);
         });
 
+        ImageView ivAvatar = findViewById(R.id.ivAvatar);
+        if (ivAvatar != null) {
+            ivAvatar.setOnClickListener(v -> {
+                loadFragment(new ProfileFragment());
+                updateNavUI(navProfile);
+            });
+        }
+
         // ==========================================
         // BACKGROUND WORKERS
         // ==========================================

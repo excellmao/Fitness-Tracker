@@ -178,8 +178,8 @@ public class EditRoutineFragment extends Fragment {
                     db.routineDao().updateRoutine(existingRoutine);
                 }
 
-                // Delete the old exercises so we can replace them
-                db.routineDao().deleteRoutineExercises(currentRoutineId);
+                // FIX: Make sure this ONLY deletes the exercises, NOT the routine itself!
+                db.routineDao().deleteRoutineExercisesByRoutineId(currentRoutineId);
             }
 
             // ==========================================

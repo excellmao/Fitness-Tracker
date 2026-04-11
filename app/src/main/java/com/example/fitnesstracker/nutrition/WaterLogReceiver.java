@@ -72,9 +72,9 @@ public class WaterLogReceiver extends BroadcastReceiver {
                 .setCustomContentView(remoteViews)
                 .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setOngoing(true) // Keeps it pinned
-                .setOnlyAlertOnce(true); // Ensures it never buzzes on updates
+                .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC)
+                .setOnlyAlertOnce(true);
 
-        // 5. Fire it!
         android.app.NotificationManager manager = (android.app.NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.notify(999, builder.build());

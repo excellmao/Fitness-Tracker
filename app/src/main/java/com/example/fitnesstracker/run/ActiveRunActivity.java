@@ -68,6 +68,14 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
 
     private float userWeightKg = 70f;
 
+    private final android.content.BroadcastReceiver pauseResumeReceiver = new android.content.BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, android.content.Intent intent) {
+            if ("TOGGLE_RUN".equals(intent.getAction())) {
+                togglePauseResume();
+            }
+        }
+    };
     private final Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
@@ -102,6 +110,21 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
                 userWeightKg = realWeight;
             }
         }).start();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            android.app.NotificationChannel channel = new android.app.NotificationChannel(
+                    "run_channel", "Active Run", android.app.NotificationManager.IMPORTANCE_LOW);
+            android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
+
+        // Register the click listener securely
+        androidx.core.content.ContextCompat.registerReceiver(
+                this,
+                pauseResumeReceiver,
+                new android.content.IntentFilter("TOGGLE_RUN"),
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        );
     }
 
     private void initViews() {
@@ -189,6 +212,8 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
             startLocationUpdates();
             ivPauseResumeIcon.setImageResource(android.R.drawable.ic_media_pause);
         }
+        String metricsStr = String.format(Locale.getDefault(), "%.2f km • %s", (totalDistanceMeters / 1000f), tvAvgPace.getText().toString());
+        updateRunNotification(tvDuration.getText().toString(), metricsStr);
     }
 
     private void startRun() {
@@ -225,6 +250,10 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
         startActivity(intent);
 
         finish();
+        android.app.NotificationManager manager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        if (manager != null) manager.cancel(888);
+
+        try { unregisterReceiver(pauseResumeReceiver); } catch (Exception e) {}
     }
 
     private void updateTimerUI(long millis) {
@@ -232,6 +261,9 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
         int min = (int) (millis / (1000 * 60)) % 60;
         int hrs = (int) (millis / (1000 * 60 * 60));
         tvDuration.setText(String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, min, sec));
+        // Push to Notification
+        String metricsStr = String.format(Locale.getDefault(), "%.2f km • %s", (totalDistanceMeters / 1000f), tvAvgPace.getText().toString());
+        updateRunNotification(tvDuration.getText().toString(), metricsStr);
     }
 
     private void updateMetricsUI() {
@@ -261,5 +293,37 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
         super.onDestroy();
         timerHandler.removeCallbacks(timerRunnable);
         if (fusedLocationClient != null) fusedLocationClient.removeLocationUpdates(locationCallback);
+        android.app.NotificationManager manager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        if (manager != null) manager.cancel(888);
+
+        try { unregisterReceiver(pauseResumeReceiver); } catch (Exception e) {}
+    }
+
+    private void updateRunNotification(String duration, String metrics) {
+        android.widget.RemoteViews remoteViews = new android.widget.RemoteViews(getPackageName(), R.layout.notification_run);
+        remoteViews.setTextViewText(R.id.tvNotifDuration, duration);
+        remoteViews.setTextViewText(R.id.tvNotifMetrics, metrics);
+
+        if (isPaused) {
+            remoteViews.setImageViewResource(R.id.btnNotifToggle, android.R.drawable.ic_media_play);
+        } else {
+            remoteViews.setImageViewResource(R.id.btnNotifToggle, android.R.drawable.ic_media_pause);
+        }
+
+        android.content.Intent toggleIntent = new android.content.Intent("TOGGLE_RUN");
+        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
+                this, 0, toggleIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE);
+        remoteViews.setOnClickPendingIntent(R.id.btnNotifToggle, pendingIntent);
+
+        androidx.core.app.NotificationCompat.Builder builder = new androidx.core.app.NotificationCompat.Builder(this, "run_channel")
+                .setSmallIcon(R.drawable.ic_run_bar)
+                .setCustomContentView(remoteViews)
+                .setStyle(new androidx.core.app.NotificationCompat.DecoratedCustomViewStyle())
+                .setOngoing(true)
+                .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC) // Shows on Lock Screen!
+                .setOnlyAlertOnce(true);
+
+        android.app.NotificationManager manager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
+        if (manager != null) manager.notify(888, builder.build());
     }
 }
