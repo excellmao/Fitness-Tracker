@@ -1,69 +1,47 @@
-# ⚠️ CHÚ Ý QUAN TRỌNG VỀ CẤU TRÚC CODE
+# Fitness Tracker
 
-Mình đã tạo sẵn các packages (folder) phân chia theo từng tính năng của app. 
+**Fitness Tracker** là một ứng dụng di động Android toàn diện, được thiết kế để giúp người dùng theo dõi và cải thiện sức khỏe qua 3 trụ cột chính: Tập luyện sức mạnh (Workout), Tim mạch (Cardio/Running), và Dinh dưỡng (Nutrition & Hydration). 
 
-Ae **viết code toàn bộ vào bên trong các folder tương ứng** với phần việc của mình để không bị lỗi.
+Được xây dựng với triết lý "Offline-first" và giao diện Dark Theme hiện đại, Fitness Tracker mang đến trải nghiệm mượt mà, trực quan ngay cả khi không có kết nối mạng.
 
-**ĐỪNG TẠO MODULE MỚI TRONG app, LỖI ĐẤY**
+---
 
-Mình sử dụng cấu trúc Hybird nhé, ae nào thấy khó hiểu thì cứ copy cả cái readme này bảo nó refactor lại cho hoặc prompt AI nnay + cấu trúc dưới (để ý các phần có [note] như này, thay đổi sao cho phù hợp với màn hình xây dựng của mình): 
-```text
-Act as an expert Android Java Developer. >
-I am working on a 5-person university fitness app project called "Fitness Tracker". We are using a Single-Activity Hybrid Architecture.
-I need you to write the boilerplate Java and XML for a new screen:
-[Insert Screen Name, e.g., The "Create Routine" Screen].
+## Các Tính Năng Chính
 
-Here are the strict architectural rules you MUST follow:
-1. The Component Rule:
-If this screen needs the main bottom navigation bar visible, you MUST build it as an AndroidX Fragment.
-If this screen is a full-screen active session (like a workout timer or GPS map) where the bottom nav should be hidden, you MUST build it as an AppCompatActivity.
-2. The Context & View Rule (For Fragments):
-Inside onCreateView, you must inflate the view and call .findViewById() on the inflated View object (do not use ViewBinding unless requested).
-Whenever a Context is needed (for Room databases, Toasts, or Adapters), you MUST use requireContext() or requireActivity(). Never use this or getContext().
-3. The Navigation Rule:
-To navigate from one Fragment to another Fragment, do NOT use Intents. You must use: requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new NextFragment()).addToBackStack(null).commit();
-To navigate from a Fragment to a breakout Activity, use a standard Intent.
-4. UI Requirements:
-Use ConstraintLayout as the root for the XML.
-The app uses a dark theme. Use @android:color/black or @color/surface_dark for backgrounds, and @color/neon_yellow for primary buttons.
-Please provide the complete Java class and the associated XML layout file. Here is what needs to be on the screen:
-[Insert a brief list of UI elements, e.g., a RecyclerView for exercises, a "Save" button, and a text input for the routine name].
-```
+* **Quản Lý Bài Tập (Workout Tracker):** 
+  * Tự tạo và chỉnh sửa lịch tập (Routine) tùy chỉnh với số Set, Rep và thời gian nghỉ.
+  * Tự động tính toán lượng Calorie tiêu thụ (dựa trên METs và cân nặng thực tế).
+* **Theo Dõi Chạy Bộ (Run Tracker):**
+  * Tích hợp GPS theo thời gian thực để đếm khoảng cách, tính toán Pace (tốc độ).
+  * Vẽ lộ trình chạy trực tiếp trên Google Maps.
+  * Màn hình tóm tắt phiên chạy (Run Summary) với các thông số chi tiết.
+* **Dinh Dưỡng & Nước (Nutrition & Hydration):**
+  * Ghi nhận nhật ký ăn uống và tính toán lượng Calorie nạp vào so với mục tiêu trong ngày.
+  * **Interactive Notification Widget:** Tính năng nhắc nhở và cho phép thêm lượng nước uống trực tiếp từ thanh thông báo (Lock Screen / Notification Tray) mà không cần mở ứng dụng.
+* **Cá Nhân Hóa (Profile):**
+  * Quản lý thông tin cơ thể (cân nặng, chiều cao) để hệ thống tự động đồng bộ và tính toán năng lượng tiêu hao chính xác nhất.
 
-### 📁 Cấu trúc thư mục hiện tại:
+---
 
-```text
-com.example.fitnesstracker
-│
-├── MainActivity.java                 <-- Khung gồm FragmentContainer & Bottom Nav
-│
-├── database/                         <-- SHARED DATA
-│   ├── FitnessDatabase.java
-│   ├── RoutineDao.java
-│   ├── WorkoutDao.java
-│   └── NutritionDao.java             
-│
-├── homescreen/                       <-- TAB 1: HomeScreen
-│   ├── HomeFragment.java             
-│   ├── adapters/                     
-│   └── models/                       
-│
-├── run/                              <-- TAB 2: Run Tracking
-│   ├── RunPrepFragment.java          <-- "Start Run" screen
-│   ├── RunSummaryFragment.java       <-- "Run Summary" screen
-│   └── ActiveRunActivity.java        <-- BREAKOUT: GPS Map
-│
-├── workout/                          <-- TAB 3: Workouts and Routines
-│   ├── WorkoutListFragment.java      <-- Main "Pre-Set Routines" screen
-│   ├── WorkoutDetailFragment.java    <-- "Hypertrophy Focus" details screen
-│   ├── CreateRoutineFragment.java    <-- "Create Routine" screen
-│   ├── AddExerciseFragment.java      <-- "Exercise Library" screen
-│   └── ActiveWorkoutActivity.java    <-- BREAKOUT: Timers/Reps
-│
-├── nutrition/                        <-- TAB 4: Nutrition
-│   ├── NutritionFragment.java        <-- Main Calorie & Hydration screen
-│   └── LogFoodActivity.java          <-- BREAKOUT: "Recent Logs" list
-│
-└── profile/                          <-- TAB 5: Profiles
-    ├── ProfileFragment.java          <-- Main weight/stats screen
-    └── ActivityArchiveFragment.java  <-- "Activity & Wins" history screen
+## Ảnh Chụp Màn Hình
+
+| Trang Chủ (Home Dashboard) | Các Bài Tập (Workout Routine) | Dinh Dưỡng (Nutrition) |
+|:---:|:---:|:---:|
+| <img src="images/home.png" width="250"> | <img src="images/workout.png" width="250"> | <img src="images/nui.png" width="250"> |
+
+<br>
+
+| Theo Dõi Chạy Bộ (Run Tracking) | Interactive Notifications (Water & Run) |
+|:---:|:---:|
+| <img src="images/run.png" width="250"> | <img src="images/notis.png" width="250"> |
+
+---
+
+## Công Nghệ Sử Dụng
+
+* **Ngôn ngữ:** Java
+* **UI/UX:** XML, ConstraintLayout, Material Components (Dark Theme, Custom Bottom Navigation).
+* **Local Database:** Room Persistence Library (SQLite wrapper).
+* **Background Tasks:** WorkManager (đặt lịch nhắc nhở), BroadcastReceiver, Thread/ExecutorService.
+* **Bản đồ & Định vị:** Google Maps SDK, FusedLocationProviderClient (Google Play Services).
+* **Kiến trúc:** Offline-first Architecture.
