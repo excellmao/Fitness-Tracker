@@ -19,13 +19,18 @@ import com.example.fitnesstracker.profile.models.UserMetricLog;
         UserMetricLog.class,
         Routine.class,
         Exercise.class,
-        RoutineExercise.class
-}, version = 7, exportSchema = false)
+        RoutineExercise.class,
+        // ADDED FROM NUTRITION:
+        FoodLog.class,
+        WaterLog.class
+}, version = 8, exportSchema = false) // Bumped to v8 to force a fresh wipe!
 public abstract class FitnessDatabase extends RoomDatabase {
 
+    // DAOs from both branches combined!
     public abstract WorkoutDao workoutDao();
     public abstract RoutineDao routineDao();
     public abstract MetricDao metricDao();
+    public abstract NutritionDao nutritionDao();
 
     private static volatile FitnessDatabase INSTANCE;
 
@@ -35,8 +40,8 @@ public abstract class FitnessDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     FitnessDatabase.class, "fitness_tracker_database")
-                            .addCallback(roomCallback)
-                            .fallbackToDestructiveMigration() // Handles the v7 wipe
+                            .addCallback(roomCallback) // Keep your awesome dummy data callback!
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

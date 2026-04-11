@@ -10,8 +10,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.example.fitnesstracker.homescreen.HomeFragment;
+import com.example.fitnesstracker.nutrition.NutritionFragment;
 import com.example.fitnesstracker.profile.ProfileFragment;
 import com.example.fitnesstracker.workout.WorkoutListFragment; // IMPORT THE NEW MODULE!
+
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,9 +53,14 @@ public class MainActivity extends AppCompatActivity {
             updateNavUI(navHome);
         }
 
-        navHome.setOnClickListener(v -> {
+        navHome.setOnClickListener( v -> {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
+        });
+
+        navMeal.setOnClickListener(v -> {
+            loadFragment(new NutritionFragment());
+            updateNavUI(navMeal);
         });
 
         navWorkout.setOnClickListener(v -> {
@@ -62,8 +73,16 @@ public class MainActivity extends AppCompatActivity {
             updateNavUI(navProfile);
         });
 
-        navRun.setOnClickListener(v -> updateNavUI(navRun));
-        navMeal.setOnClickListener(v -> updateNavUI(navMeal));
+        PeriodicWorkRequest waterRequest = new PeriodicWorkRequest.Builder(
+                com.example.fitnesstracker.nutrition.WaterReminderWorker.class,
+                2, TimeUnit.HOURS)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "WaterReminderTask",
+                ExistingPeriodicWorkPolicy.KEEP,
+                waterRequest
+        );
     }
 
     private void loadFragment(Fragment fragment) {

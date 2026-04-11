@@ -184,7 +184,41 @@ public class LogFoodActivity extends AppCompatActivity {
         }
 
         private void setFoodIcon(ImageView imageView, String name) {
-            imageView.setImageResource(R.drawable.ic_meal);
+            switch (name.toLowerCase()) {
+                case "protein bowl":
+                    imageView.setImageResource(R.drawable.img_protein_bowl);
+                    break;
+                case "avocado toast":
+                    imageView.setImageResource(R.drawable.img_toast);
+                    break;
+                case "grilled salmon":
+                    imageView.setImageResource(R.drawable.img_salmon);
+                    break;
+                case "greek yogurt":
+                    imageView.setImageResource(R.drawable.img_yogurt);
+                    break;
+                case "garden salad":
+                    imageView.setImageResource(R.drawable.img_salad);
+                    break;
+                case "chicken breast":
+                    imageView.setImageResource(R.drawable.img_chicken);
+                    break;
+                case "oatmeal":
+                    imageView.setImageResource(R.drawable.img_oatmeal);
+                    break;
+                case "banana":
+                    imageView.setImageResource(R.drawable.img_banana);
+                    break;
+                case "beef steak":
+                    imageView.setImageResource(R.drawable.img_steak);
+                    break;
+                case "scrambled eggs":
+                    imageView.setImageResource(R.drawable.img_eggs);
+                    break;
+                default:
+                    imageView.setImageResource(R.drawable.ic_meal);
+                    break;
+            }
         }
 
         @Override

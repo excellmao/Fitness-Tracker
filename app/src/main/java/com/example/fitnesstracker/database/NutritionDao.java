@@ -40,4 +40,7 @@ public interface NutritionDao {
 
     @Query("SELECT COUNT(*) FROM food_logs WHERE date = :date")
     int getFoodLogCountByDate(String date);
+
+    @Query("SELECT SUM(amountMl) FROM water_logs WHERE date = :date")
+    int getTotalWaterByDateSync(String date);
 }

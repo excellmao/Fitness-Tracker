@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -23,10 +24,23 @@
             </intent-filter>
         </activity>
 
+
         <activity
             android:name="com.example.fitnesstracker.workout.ActiveWorkoutActivity"
             android:exported="false"
             android:theme="@style/Theme.FitnessTracker" />
+
+        <activity
+            android:name="com.example.fitnesstracker.nutrition.LogFoodActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".nutrition.WaterLogReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="ADD_WATER" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
