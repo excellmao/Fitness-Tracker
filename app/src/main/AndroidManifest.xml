@@ -4,6 +4,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,6 +19,10 @@
         android:theme="@style/Theme.FitnessTracker"
         tools:targetApi="31">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBJ5uTj9fJoedzlnZ9zR1Jp8zBpCHK91EU" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -24,7 +32,6 @@
             </intent-filter>
         </activity>
 
-
         <activity
             android:name="com.example.fitnesstracker.workout.ActiveWorkoutActivity"
             android:exported="false"
@@ -32,6 +39,10 @@
 
         <activity
             android:name="com.example.fitnesstracker.nutrition.LogFoodActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.fitnesstracker.run.ActiveRunActivity"
             android:exported="false" />
 
         <receiver

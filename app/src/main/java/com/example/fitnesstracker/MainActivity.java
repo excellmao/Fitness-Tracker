@@ -12,7 +12,8 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.example.fitnesstracker.homescreen.HomeFragment;
 import com.example.fitnesstracker.nutrition.NutritionFragment;
 import com.example.fitnesstracker.profile.ProfileFragment;
-import com.example.fitnesstracker.workout.WorkoutListFragment; // IMPORT THE NEW MODULE!
+import com.example.fitnesstracker.workout.WorkoutListFragment;
+import com.example.fitnesstracker.run.RunPrepFragment; // ADDED FROM RUN BRANCH!
 
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -31,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //com.example.fitnesstracker.database.SupabaseSync.fetchExercises(this);
-
         // 1. KEEP YOUR FULLSCREEN LOGIC
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -48,19 +47,24 @@ public class MainActivity extends AppCompatActivity {
         navMeal = findViewById(R.id.navMeal);
         navProfile = findViewById(R.id.navProfile);
 
+        // ALWAYS START ON HOME SCREEN
         if (savedInstanceState == null) {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
         }
 
+        // ==========================================
+        // NAVIGATION CLICK LISTENERS
+        // ==========================================
         navHome.setOnClickListener( v -> {
             loadFragment(new HomeFragment());
             updateNavUI(navHome);
         });
 
-        navMeal.setOnClickListener(v -> {
-            loadFragment(new NutritionFragment());
-            updateNavUI(navMeal);
+        // ADDED: Hook up the Run branch to the Run icon!
+        navRun.setOnClickListener(v -> {
+            loadFragment(new RunPrepFragment());
+            updateNavUI(navRun);
         });
 
         navWorkout.setOnClickListener(v -> {
@@ -68,11 +72,19 @@ public class MainActivity extends AppCompatActivity {
             updateNavUI(navWorkout);
         });
 
+        navMeal.setOnClickListener(v -> {
+            loadFragment(new NutritionFragment());
+            updateNavUI(navMeal);
+        });
+
         navProfile.setOnClickListener(v -> {
             loadFragment(new ProfileFragment());
             updateNavUI(navProfile);
         });
 
+        // ==========================================
+        // BACKGROUND WORKERS
+        // ==========================================
         PeriodicWorkRequest waterRequest = new PeriodicWorkRequest.Builder(
                 com.example.fitnesstracker.nutrition.WaterReminderWorker.class,
                 2, TimeUnit.HOURS)
