@@ -16,4 +16,6 @@ public interface WorkoutDao {
     int getTotalDurationForDate(String date);
     @Query("SELECT * FROM workout_logs ORDER BY date DESC")
     List<WorkoutLog> getAllWorkoutLogs();
+    @Query("SELECT COALESCE(SUM(caloriesBurned), 0) FROM workout_logs WHERE date = :date")
+    androidx.lifecycle.LiveData<Integer> getTotalBurnedCaloriesByDate(String date);
 }

@@ -1,6 +1,7 @@
 package com.example.fitnesstracker.run;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -254,6 +255,10 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
         if (manager != null) manager.cancel(888);
 
         try { unregisterReceiver(pauseResumeReceiver); } catch (Exception e) {}
+
+        Intent stopIntent = new Intent(this, RunForegroundService.class);
+        stopIntent.setAction("STOP_SERVICE");
+        startService(stopIntent);
     }
 
     private void updateTimerUI(long millis) {
@@ -297,33 +302,18 @@ public class ActiveRunActivity extends AppCompatActivity implements OnMapReadyCa
         if (manager != null) manager.cancel(888);
 
         try { unregisterReceiver(pauseResumeReceiver); } catch (Exception e) {}
+        Intent stopIntent = new Intent(this, RunForegroundService.class);
+        stopIntent.setAction("STOP_SERVICE");
+        startService(stopIntent);
     }
 
-    private void updateRunNotification(String duration, String metrics) {
-        android.widget.RemoteViews remoteViews = new android.widget.RemoteViews(getPackageName(), R.layout.notification_run);
-        remoteViews.setTextViewText(R.id.tvNotifDuration, duration);
-        remoteViews.setTextViewText(R.id.tvNotifMetrics, metrics);
+    private void updateRunNotification(String duration, String metricsStr) {
+        Intent serviceIntent = new Intent(this, RunForegroundService.class);
+        serviceIntent.putExtra("duration", duration);
+        serviceIntent.putExtra("metrics", metricsStr);
+        serviceIntent.putExtra("isPaused", isPaused);
 
-        if (isPaused) {
-            remoteViews.setImageViewResource(R.id.btnNotifToggle, android.R.drawable.ic_media_play);
-        } else {
-            remoteViews.setImageViewResource(R.id.btnNotifToggle, android.R.drawable.ic_media_pause);
-        }
-
-        android.content.Intent toggleIntent = new android.content.Intent("TOGGLE_RUN");
-        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
-                this, 0, toggleIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE);
-        remoteViews.setOnClickPendingIntent(R.id.btnNotifToggle, pendingIntent);
-
-        androidx.core.app.NotificationCompat.Builder builder = new androidx.core.app.NotificationCompat.Builder(this, "run_channel")
-                .setSmallIcon(R.drawable.ic_run_bar)
-                .setCustomContentView(remoteViews)
-                .setStyle(new androidx.core.app.NotificationCompat.DecoratedCustomViewStyle())
-                .setOngoing(true)
-                .setVisibility(androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC) // Shows on Lock Screen!
-                .setOnlyAlertOnce(true);
-
-        android.app.NotificationManager manager = (android.app.NotificationManager) getSystemService(android.content.Context.NOTIFICATION_SERVICE);
-        if (manager != null) manager.notify(888, builder.build());
+        // Starts the service and keeps the app alive
+        androidx.core.content.ContextCompat.startForegroundService(this, serviceIntent);
     }
 }

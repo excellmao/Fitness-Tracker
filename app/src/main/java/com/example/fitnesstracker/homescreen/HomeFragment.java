@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
             LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            // 1. SEED DATA (Updated with calorie parameter)
+            // 1. SEED DATA
             seedDummyDataIfNeeded(dao, monday, formatter);
 
             // 2. READ MINUTES
@@ -162,7 +162,7 @@ public class HomeFragment extends Fragment {
             // Updated with the new 4th parameter: Calories
             dao.insertWorkout(new WorkoutLog(monday.format(formatter), "Morning Sprint", 30, 250));
             dao.insertWorkout(new WorkoutLog(monday.format(formatter), "PeePee", 30, 150));
-            dao.insertWorkout(new WorkoutLog(monday.plusDays(2).format(formatter), "Leg Day", 45, 400));
+            dao.insertWorkout(new WorkoutLog(monday.plusDays(3).format(formatter), "Leg Day", 45, 400));
             dao.insertWorkout(new WorkoutLog(monday.plusDays(4).format(formatter), "Zen Flow", 20, 100));
         }
     }

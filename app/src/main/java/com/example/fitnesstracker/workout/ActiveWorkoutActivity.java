@@ -41,6 +41,7 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
     private int currentIndex = 0;
     private int currentSet = 1;
     private int routineId;
+    private String routineName = "Custom Workout";
 
     // Timers & Stats
     private CountDownTimer currentTimer;
@@ -108,9 +109,6 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
         findViewById(R.id.btnActiveSkip).setOnClickListener(v -> moveToNextStep());
         findViewById(R.id.btnRestSkip).setOnClickListener(v -> moveToNextStep());
 
-        // Summary Done Button
-        findViewById(R.id.btnSummaryDone).setOnClickListener(v -> finish());
-
         // Pause Button (Bonus: simple pause/resume logic)
         btnPause.setOnClickListener(v -> {
             if (isTimerRunning) {
@@ -126,6 +124,12 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
     private void fetchWorkoutData() {
         new Thread(() -> {
             FitnessDatabase db = FitnessDatabase.getInstance(this);
+
+            com.example.fitnesstracker.database.Routine currentRoutine = db.routineDao().getRoutineById(routineId);
+            if (currentRoutine != null) {
+                routineName = currentRoutine.name;
+            }
+
             exercises = db.routineDao().getExercisesForRoutine(routineId);
 
             if (!exercises.isEmpty()) {
@@ -216,6 +220,23 @@ public class ActiveWorkoutActivity extends AppCompatActivity {
 
         tvSummaryTime.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d", totalMinutes, totalSeconds));
         tvSummaryKcal.setText(String.valueOf(Math.max(1, burnedKcal)));
+        findViewById(R.id.btnSummaryDone).setOnClickListener(v -> {
+            new Thread(() -> {
+                com.example.fitnesstracker.database.FitnessDatabase db = com.example.fitnesstracker.database.FitnessDatabase.getInstance(this);
+                String todayDate = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                // Save the Workout Log using the math from above
+                db.workoutDao().insertWorkout(new com.example.fitnesstracker.database.WorkoutLog(
+                        todayDate,
+                        routineName,
+                        totalMinutes,
+                        Math.max(1, burnedKcal)
+                ));
+
+                // Close the workout screen and return to Home
+                runOnUiThread(this::finish);
+            }).start();
+        });
     }
 
 

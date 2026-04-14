@@ -26,7 +26,6 @@ import com.example.fitnesstracker.profile.models.UserMetricLog;
 }, version = 8, exportSchema = false) // Bumped to v8 to force a fresh wipe!
 public abstract class FitnessDatabase extends RoomDatabase {
 
-    // DAOs from both branches combined!
     public abstract WorkoutDao workoutDao();
     public abstract RoutineDao routineDao();
     public abstract MetricDao metricDao();

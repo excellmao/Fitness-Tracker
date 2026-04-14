@@ -26,6 +26,19 @@ public class MainActivity extends AppCompatActivity {
 
     private final int COLOR_NEON = Color.parseColor("#D4FF00");
     private final int COLOR_INACTIVE = Color.parseColor("#808080");
+    private final androidx.activity.result.ActivityResultLauncher<String[]> permissionLauncher =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                // Android gives us a map of which permissions were granted or denied
+                Boolean fineLocation = result.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false);
+                Boolean notifications = result.getOrDefault(android.Manifest.permission.POST_NOTIFICATIONS, false);
+
+                if (!fineLocation) {
+                    android.widget.Toast.makeText(this, "Location needed to draw run map!", android.widget.Toast.LENGTH_SHORT).show();
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU && !notifications) {
+                    android.widget.Toast.makeText(this, "Notifications needed for background tracking!", android.widget.Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +103,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // ==========================================
-        // BACKGROUND WORKERS
-        // ==========================================
         PeriodicWorkRequest waterRequest = new PeriodicWorkRequest.Builder(
                 com.example.fitnesstracker.nutrition.WaterReminderWorker.class,
                 2, TimeUnit.HOURS)
@@ -103,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
                 ExistingPeriodicWorkPolicy.KEEP,
                 waterRequest
         );
+
+        checkAndRequestPermissions();
     }
 
     private void loadFragment(Fragment fragment) {
@@ -120,5 +132,25 @@ public class MainActivity extends AppCompatActivity {
         navProfile.setColorFilter(COLOR_INACTIVE);
 
         selectedNav.setColorFilter(COLOR_NEON);
+    }
+    private void checkAndRequestPermissions() {
+        java.util.List<String> permissionsNeeded = new java.util.ArrayList<>();
+
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            permissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            permissionsNeeded.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                permissionsNeeded.add(android.Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+
+        if (!permissionsNeeded.isEmpty()) {
+            permissionLauncher.launch(permissionsNeeded.toArray(new String[0]));
+        }
     }
 }

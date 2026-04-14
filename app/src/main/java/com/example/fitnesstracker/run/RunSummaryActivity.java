@@ -69,10 +69,43 @@ public class RunSummaryActivity extends AppCompatActivity {
         // 3. Setup the Done Button
         Button btnDone = findViewById(R.id.btnDone);
         btnDone.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            finish();
+
+            // 1. Extract and convert the text back into numbers
+            String durStr = incomingIntent.getStringExtra("duration_key"); // e.g., "00:42:15"
+            String calStr = incomingIntent.getStringExtra("calories_key"); // e.g., "420 kcal"
+
+            int minutes = 0;
+            if (durStr != null && durStr.contains(":")) {
+                String[] parts = durStr.split(":");
+                // Convert Hours to mins, add Mins
+                minutes = (Integer.parseInt(parts[0]) * 60) + Integer.parseInt(parts[1]);
+            }
+
+            int calories = 0;
+            if (calStr != null) {
+                // Strips out " kcal" and leaves just the number
+                calories = Integer.parseInt(calStr.replaceAll("[^0-9]", ""));
+            }
+
+            final int finalMins = minutes;
+            final int finalCals = calories;
+
+            // 2. Save to Database in the background
+            new Thread(() -> {
+                com.example.fitnesstracker.database.FitnessDatabase db = com.example.fitnesstracker.database.FitnessDatabase.getInstance(this);
+                String todayDate = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                // Insert as a "Run"
+                db.workoutDao().insertWorkout(new com.example.fitnesstracker.database.WorkoutLog(todayDate, "Run", finalMins, finalCals));
+
+                // 3. Go back to Home
+                runOnUiThread(() -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                    finish();
+                });
+            }).start();
         });
     }
 
